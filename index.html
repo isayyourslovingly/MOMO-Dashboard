@@ -6,227 +6,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { padding: 2rem; background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-    .summary-card { background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: center; }
-    .card-value { font-size: 1.4rem; font-weight: bold; }
-    .chart-container { margin-top: 2rem; }
-    .nav-pills .nav-link.active { background-color: #0d6efd; }
-  </style>
 </head>
 <body>
 
-  <h1 class="mb-4">📊 Sales Dashboard</h1>
+  <div class="container">
+    <h1 class="mb-4">📊 Sales Dashboard</h1>
 
-  <!-- Summary Cards -->
-  <div class="row g-4 mb-4">
-    <div class="col-md-4">
-      <div class="summary-card">
-        💰 Total Sales<br><span id="totalSales" class="card-value">₹0</span>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="summary-card">
-        📦 Total Items Sold<br><span id="totalQty" class="card-value">0</span>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="summary-card">
-        🏆 Top Item<br><span id="topItem" class="card-value">N/A</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- View Toggle Tabs -->
-  <ul class="nav nav-pills mb-4" id="viewTabs">
-    <li class="nav-item">
-      <a class="nav-link active" data-bs-toggle="pill" href="#itemised">Itemised View</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="pill" href="#weekly">Weekly Summary</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="pill" href="#monthly">Monthly Trends</a>
-    </li>
-  </ul>
-
-  <div class="tab-content">
-    <!-- Itemised View -->
-    <div id="itemised" class="tab-pane fade show active">
-      <input type="text" id="searchInput" class="form-control mb-3" placeholder="🔍 Search item name...">
-      <table class="table table-striped table-bordered" id="salesTable">
-        <thead><tr></tr></thead>
-        <tbody></tbody>
-      </table>
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-4"><div class="summary-card">💰 Total Sales<br><span id="totalSales" class="card-value">₹0</span></div></div>
+      <div class="col-md-4"><div class="summary-card">📦 Total Items Sold<br><span id="totalQty" class="card-value">0</span></div></div>
+      <div class="col-md-4"><div class="summary-card">🏆 Top Item<br><span id="topItem" class="card-value">N/A</span></div></div>
     </div>
 
-    <!-- Weekly Summary -->
-    <div id="weekly" class="tab-pane fade">
-      <div class="chart-container"><canvas id="weeklyChart"></canvas></div>
-    </div>
-
-    <!-- Monthly Trends -->
-    <div id="monthly" class="tab-pane fade">
-      <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- Insights Panel -->
-  <div class="mt-5">
-    <h3>🧠 Insights</h3>
-    <ul class="list-group">
-      <li class="list-group-item">📅 Best Day: <strong id="bestDay">-</strong></li>
-      <li class="list-group-item">🔥 Best Selling Item: <strong id="insightTopItem">-</strong></li>
-      <li class="list-group-item">💸 This Week's Total: ₹<strong id="weekTotal">0</strong></li>
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4" id="viewTabs">
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#itemised">Itemised View</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#weekly">Weekly Summary</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#monthly">Monthly Trends</a></li>
     </ul>
+
+    <div class="tab-content">
+      <!-- Itemised -->
+      <div id="itemised" class="tab-pane fade show active">
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="🔍 Search item name...">
+        <table class="table table-striped table-bordered" id="salesTable">
+          <thead><tr></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Weekly Table -->
+      <div id="weekly" class="tab-pane fade">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped mt-3">
+            <thead>
+              <tr>
+                <th>📅 Week</th>
+                <th>💰 Total Sales</th>
+                <th>🏆 Top Item</th>
+                <th>🔻 Least Item</th>
+                <th>📈 Best Day</th>
+                <th>💸 Best Day Sales</th>
+              </tr>
+            </thead>
+            <tbody id="weeklyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Monthly -->
+      <div id="monthly" class="tab-pane fade">
+        <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div class="mt-5">
+      <h3>🧠 Insights</h3>
+      <ul class="list-group">
+        <li class="list-group-item">📅 Best Day: <strong id="bestDay">-</strong></li>
+        <li class="list-group-item">🔥 Best Selling Item: <strong id="insightTopItem">-</strong></li>
+        <li class="list-group-item">💸 This Week's Total: ₹<strong id="weekTotal">0</strong></li>
+      </ul>
+    </div>
   </div>
 
-  <!-- Bootstrap JS -->
+  <!-- Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec'; // Replace with your Apps Script Web App URL
-
-    function formatDate(dateStr) {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      });
-    }
-
-    let rawData = [];
-
-    fetch(apiUrl)
-      .then(res => res.json())
-      .then(data => {
-        rawData = data;
-        buildTable(data);
-        buildSummary(data);
-        buildCharts(data);
-        buildInsights(data);
-      });
-
-    function buildTable(data) {
-      const headers = Object.keys(data[0]);
-      const thead = document.querySelector('#salesTable thead tr');
-      const tbody = document.querySelector('#salesTable tbody');
-      thead.innerHTML = ''; tbody.innerHTML = '';
-
-      headers.forEach(h => {
-        const th = document.createElement('th');
-        th.textContent = h;
-        thead.appendChild(th);
-      });
-
-      data.forEach(row => {
-        const tr = document.createElement('tr');
-        headers.forEach(h => {
-          const td = document.createElement('td');
-          td.textContent = h === 'Date' ? formatDate(row[h]) : row[h];
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-
-      document.querySelector('#searchInput').addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
-        tbody.querySelectorAll('tr').forEach(tr => {
-          tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
-        });
-      });
-    }
-
-    function buildSummary(data) {
-      let totalSales = 0;
-      let totalQty = 0;
-      const itemCount = {};
-
-      data.forEach(row => {
-        totalSales += Number(row.Total);
-        totalQty += Number(row["Qty."]);
-        itemCount[row.Item] = (itemCount[row.Item] || 0) + Number(row["Qty."]);
-      });
-
-      const topItem = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
-
-      document.getElementById("totalSales").textContent = totalSales.toLocaleString();
-      document.getElementById("totalQty").textContent = totalQty;
-      document.getElementById("topItem").textContent = topItem;
-    }
-
-    function buildCharts(data) {
-      const dailyTotals = {};
-      data.forEach(row => {
-        const date = row.Date;
-        const formatted = formatDate(date);
-        dailyTotals[formatted] = (dailyTotals[formatted] || 0) + Number(row.Total);
-      });
-
-      const dailyLabels = Object.keys(dailyTotals).reverse();
-      const dailyValues = Object.values(dailyTotals).reverse();
-
-      new Chart(document.getElementById('weeklyChart'), {
-        type: 'bar',
-        data: {
-          labels: dailyLabels,
-          datasets: [{
-            label: 'Daily Sales (₹)',
-            data: dailyValues,
-            backgroundColor: '#0d6efd'
-          }]
-        }
-      });
-
-      const monthlyTotals = {};
-      data.forEach(row => {
-        const month = row.MonthYear;
-        monthlyTotals[month] = (monthlyTotals[month] || 0) + Number(row.Total);
-      });
-
-      const monthLabels = Object.keys(monthlyTotals);
-      const monthValues = Object.values(monthlyTotals);
-
-      new Chart(document.getElementById('monthlyChart'), {
-        type: 'line',
-        data: {
-          labels: monthLabels,
-          datasets: [{
-            label: 'Monthly Sales (₹)',
-            data: monthValues,
-            fill: false,
-            borderColor: '#198754',
-            tension: 0.2
-          }]
-        }
-      });
-    }
-
-    function buildInsights(data) {
-      const daily = {};
-      const items = {};
-
-      data.forEach(row => {
-        const formattedDate = formatDate(row.Date);
-        daily[formattedDate] = (daily[formattedDate] || 0) + Number(row.Total);
-        items[row.Item] = (items[row.Item] || 0) + Number(row["Qty."]);
-      });
-
-      const bestDay = Object.entries(daily).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-      const topItem = Object.entries(items).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-
-      document.getElementById("bestDay").textContent = bestDay;
-      document.getElementById("insightTopItem").textContent = topItem;
-
-      const recentTotal = Object.entries(daily)
-        .slice(-7)
-        .reduce((sum, [, v]) => sum + v, 0);
-
-      document.getElementById("weekTotal").textContent = recentTotal.toLocaleString();
-    }
-  </script>
+  <!-- App JS -->
+  <script src="app.js"></script>
 </body>
 </html>

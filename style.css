@@ -1,0 +1,23 @@
+body {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .summary-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  
+  .card-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+  
+  .chart-container {
+    margin-top: 2rem;
+  }
+  
