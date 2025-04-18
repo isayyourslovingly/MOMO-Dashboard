@@ -155,6 +155,11 @@ body.unauthenticated .container {
 }
 
 #viewTabs .nav-link.active[href="#inventory"] {
+  background-color: #35dcb8; /* Red */
+  color: #fff;
+}
+
+#viewTabs .nav-link.active[href="#expenses"] {
   background-color: #dc3545; /* Red */
   color: #fff;
 }
@@ -179,6 +184,13 @@ body.unauthenticated .container {
 }
 
 .tab-content > .tab-pane#inventory.active {
+  background-color: #aaced4; /* Light red background */
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+
+.tab-content > .tab-pane#expenses.active {
   background-color: #ffe6e9; /* Light red background */
   padding: 1rem;
   border-radius: 8px;
@@ -282,4 +294,17 @@ body.unauthenticated .container {
   .chart-box {
     display: none !important;
   }
+}
+
+#expenses.tab-pane.active {
+  background-color: #fceeee; /* Light red-pink */
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+#expenses table tbody tr {
+  background-color: #fdeaea;
+}
+#expenses table tbody tr:nth-child(even) {
+  background-color: #ffffff;
 }

@@ -204,6 +204,7 @@ applyFilters();
 
 
 let rawData = [];
+let ExpenseData = [];
 let filteredData = [];
 let showingLowStock = false;
 let weeklyDonutChartInstance;
@@ -355,7 +356,7 @@ function buildSummary(data) {
   document.getElementById("topItem").textContent = topItem;
 }
 
-function buildWeeklyTable(data) {
+function buildWeeklyTable(data,filteredExpenseData) {
   const weeks = {};
 
   data.forEach(row => {
@@ -371,7 +372,8 @@ function buildWeeklyTable(data) {
       weeks[weekKey] = {
         total: 0,
         items: {},
-        days: {}
+        days: {},
+        expenses: 0
       };
     }
 
@@ -383,6 +385,34 @@ function buildWeeklyTable(data) {
     weeks[weekKey].items[item] = (weeks[weekKey].items[item] || 0) + qty;
     weeks[weekKey].days[date] = (weeks[weekKey].days[date] || 0) + Number(row.Total);
   });
+
+  // 👇 Add expense aggregation
+filteredExpenseData.forEach(row => {
+  console.log(row);
+  const dateObj = new Date(row.Date);
+  const day = dateObj.getDay();
+  const weekStart = new Date(dateObj);
+  weekStart.setDate(dateObj.getDate() - day);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+
+  const weekKey = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+  if (!weeks[weekKey]) {
+    weeks[weekKey] = {
+      total: 0,
+      items: {},
+      days: {},
+      expenses: 0 // 👈 Add this
+    };
+  }
+
+  weeks[weekKey].expenses += parseFloat(row.Amount || 0); // 👈 Track expenses
+  console.log(weeks);
+  console.log(weekKey);
+  console.log(weeks[weekKey].expenses);
+});
+
+
 
   const tbody = document.getElementById("weeklyTableBody");
   tbody.innerHTML = '';
@@ -401,10 +431,16 @@ function buildWeeklyTable(data) {
       <td>${leastItem}</td>
       <td>${bestDay[0]}</td>
       <td>${formatCurrency(bestDay[1])}</td>
+      <td class="text-danger">${formatCurrency(stats.expenses || 0)}</td>
     `;
 
     tbody.appendChild(tr);
   });
+
+
+
+
+
 }
 
 function buildCharts(data) {
@@ -482,8 +518,9 @@ function buildInsights(data) {
 
 }
 
-function buildMonthlySummary(data) {
+function buildMonthlySummary(data,filteredExpenseData) {
   const months = {};
+  const monthlyExpenses = {}; 
 
   // Group by MonthYear
   data.forEach(row => {
@@ -507,6 +544,13 @@ function buildMonthlySummary(data) {
     months[key].items[item] = (months[key].items[item] || 0) + qty;
     months[key].days[dateFormatted] = (months[key].days[dateFormatted] || 0) + Number(row.Total);
     months[key].rawRows.push(row);
+
+   });
+
+   filteredExpenseData.forEach(row => {
+    const date = new Date(row.Date);
+    const key = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+    monthlyExpenses[key] = (monthlyExpenses[key] || 0) + parseFloat(row.Amount || 0);
   });
   
   const tbody = document.getElementById("monthlyTableBody");
@@ -551,6 +595,7 @@ function buildMonthlySummary(data) {
       <td>${monthYear}</td>
       <td>${formatCurrency(stats.total)}</td>
       <td>${topItem}</td>
+      <td class="text-danger">${formatCurrency(monthlyExpenses[monthYear] || 0)}</td>
       <td>
         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false">
           🔍 View
@@ -625,18 +670,27 @@ function applyFilters() {
     return (!selectedYear || y === selectedYear) &&
            (!selectedMonth || m === selectedMonth);
   });
+  filteredExpenseData = ExpenseData.filter(row => {
+    const dateObj = new Date(row.Date);
+    const y = dateObj.getFullYear().toString();
+    const m = ("0" + (dateObj.getMonth() + 1)).slice(-2); // '01'-'12'
 
+    return (!selectedYear || y === selectedYear) &&
+           (!selectedMonth || m === selectedMonth);
+  });
   // rebuild all views
   buildTable(filteredData);
   buildSummary(filteredData);
-  buildWeeklyTable(filteredData);
+  buildWeeklyTable(filteredData,filteredExpenseData);
   // buildCharts(filteredData);
-  buildMonthlySummary(filteredData); 
+  buildMonthlySummary(filteredData,filteredExpenseData); 
   fetchInventoryData();
+  // fetchExpensesData(filteredData);
   buildInsights(filteredData);
   buildWeeklyDonutChart(filteredData); 
   buildMonthlyBarChart(filteredData);
-
+  populateExpensesTable(filteredExpenseData);
+  calculateExpensesSummary(filteredExpenseData);
 
 }
 
@@ -722,6 +776,48 @@ function fetchInventoryData() {
       console.error("Error fetching inventory data:", err);
       showLoading(false); // Hide loading spinner in case of error
     });
+}
+
+// 📦 Fetch expenses data
+function fetchExpensesData() {
+  showLoading(true); // Show loading spinner and blur page
+
+  fetch(apiUrl + '?action=getExpenses')
+    .then(response => response.json())
+    .then(data => {
+      ExpenseData = data;
+      applyFilters();   
+      showLoading(false); // Hide loading spinner and unblur the page
+    })
+    .catch(err => {
+      console.error("Error fetching Expenses data:", err);
+      showLoading(false); // Hide loading spinner in case of error
+    });
+}
+
+function populateExpensesTable(data) {
+  const tableBody = document.getElementById('expensesTableBody');
+  tableBody.innerHTML = '';
+
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${formatDate(row.Date)}</td>
+      <td>${row.Description}</td>
+      <td class="text-danger">₹${parseFloat(row.Amount || 0).toFixed(2)}</td>
+      <td>${row.Category}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+function calculateExpensesSummary(data) {
+  const total = data.reduce((sum, row) => sum + parseFloat(row.Amount || 0), 0);
+  document.getElementById('totalExpenses').textContent = `₹${total.toFixed(2)}`;
+  
+  // ✅ Update new card
+  const card = document.getElementById('totalExpensesCard');
+  if (card) card.textContent = `₹${total.toFixed(2)}`;
 }
 
 
@@ -873,4 +969,5 @@ document.getElementById("lowStockSwitch").addEventListener("change", (e) => {
 
 document.addEventListener('DOMContentLoaded', function() {
   fetchSaleItemsData();
+  fetchExpensesData();
 });

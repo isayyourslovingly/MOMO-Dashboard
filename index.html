@@ -80,17 +80,31 @@
   </div>
 
   <!-- Summary Cards: Sales Overview -->
+
   <div class="row g-4 mb-4">
-    <div class="col-md-4">
-      <div class="summary-card">💰 Total Sales<br><span id="totalSales" class="card-value">₹0</span></div>
+    <div class="col-md-3">
+      <div class="summary-card h-100 d-flex flex-column justify-content-center align-items-center">
+        💰 Total Sales<br><span id="totalSales" class="card-value">₹0</span>
+      </div>
     </div>
-    <div class="col-md-4">
-      <div class="summary-card">📦 Total Items Sold<br><span id="totalQty" class="card-value">0</span></div>
+    <div class="col-md-3">
+      <div class="summary-card h-100 d-flex flex-column justify-content-center align-items-center">
+        📦 Total Items Sold<br><span id="totalQty" class="card-value">0</span>
+      </div>
     </div>
-    <div class="col-md-4">
-      <div class="summary-card">🏆 Top Item<br><span id="topItem" class="card-value">N/A</span></div>
+    <div class="col-md-3">
+      <div class="summary-card h-100 d-flex flex-column justify-content-center align-items-center">
+        🏆 Top Item<br><span id="topItem" class="card-value">N/A</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="summary-card h-100 d-flex flex-column justify-content-center align-items-center">
+        📉 Total Expenses<br><span id="totalExpensesCard" class="card-value text-danger">₹0</span>
+      </div>
     </div>
   </div>
+  
+  
 
   <!-- Navigation Tabs -->
   <ul class="nav nav-pills mb-4" id="viewTabs">
@@ -106,6 +120,10 @@
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="pill" href="#inventory">Inventory</a>
     </li>
+    <li class="nav-item">
+      <a id ="expenses-tab" class="nav-link" data-bs-toggle="pill" href="#expenses">Expenses</a>
+    </li>
+    
   </ul>
 
   <div class="tab-content">
@@ -130,6 +148,7 @@
               <th>🔻 Least Item</th>
               <th>📈 Best Day</th>
               <th>💸 Best Day Sales</th>
+              <th>💳 Expenses</th>
             </tr>
           </thead>
           <tbody id="weeklyTableBody"></tbody>
@@ -146,6 +165,7 @@
             <th>Month</th>
             <th>Total Sales</th>
             <th>Top Item</th>
+            <th>Expenses</th>
             <th>Details</th>
           </tr>
         </thead>
@@ -183,6 +203,25 @@
       </div>
     </div>
 
+    <div id="expenses" class="tab-pane fade">
+      <div class="table-responsive mt-3">
+        <div class="summary-card">📉 Total Expenses<br><span id="totalExpenses" class="card-value text-danger">₹0</span></div>
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>🗓️ Date</th>
+              <th>📄 Description</th>
+              <th>💸 Amount</th>
+              <th>📂 Category</th>
+            </tr>
+          </thead>
+          <tbody id="expensesTableBody">
+            <!-- Fill via JS or static rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Insights Section -->
     <div class="mt-5">
       <h3>🧠 Insights</h3>
@@ -193,6 +232,9 @@
         <li class="list-group-item"><strong>Low Stock Items:</strong> <span id="lowStockItems">Loading...</span></li>
       </ul>
     </div>
+    
+    
+
   </div>
 </div>
 
