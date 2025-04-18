@@ -1,4 +1,4 @@
-const apiUrl = 'YOUR_WEB_APP_URL_HERE'; // Replace this with your actual Apps Script URL
+const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec'; // Replace this with your actual Apps Script URL
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
