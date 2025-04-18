@@ -2,39 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Sales Dashboard</title>
+  <title>Sales Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CSS -->
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
-    body { padding: 2rem; background: #f9fafb; font-family: 'Segoe UI', sans-serif; }
-    .summary-card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .card-value { font-size: 1.5rem; font-weight: bold; }
+    body { padding: 2rem; background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+    .summary-card { background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: center; }
+    .card-value { font-size: 1.4rem; font-weight: bold; }
     .chart-container { margin-top: 2rem; }
     .nav-pills .nav-link.active { background-color: #0d6efd; }
   </style>
 </head>
 <body>
 
-  <h1 class="mb-4">📊 My Sales Dashboard</h1>
+  <h1 class="mb-4">📊 Sales Dashboard</h1>
 
   <!-- Summary Cards -->
   <div class="row g-4 mb-4">
     <div class="col-md-4">
-      <div class="summary-card text-center">
+      <div class="summary-card">
         💰 Total Sales<br><span id="totalSales" class="card-value">₹0</span>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="summary-card text-center">
+      <div class="summary-card">
         📦 Total Items Sold<br><span id="totalQty" class="card-value">0</span>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="summary-card text-center">
+      <div class="summary-card">
         🏆 Top Item<br><span id="topItem" class="card-value">N/A</span>
       </div>
     </div>
@@ -84,11 +83,20 @@
     </ul>
   </div>
 
-  <!-- Bootstrap JS (for tabs) -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec'; // replace with your live Apps Script Web App URL
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec'; // Replace with your Apps Script Web App URL
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
 
     let rawData = [];
 
@@ -118,7 +126,7 @@
         const tr = document.createElement('tr');
         headers.forEach(h => {
           const td = document.createElement('td');
-          td.textContent = row[h];
+          td.textContent = h === 'Date' ? formatDate(row[h]) : row[h];
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -151,11 +159,11 @@
     }
 
     function buildCharts(data) {
-      // DAILY BAR CHART (Weekly Tab)
       const dailyTotals = {};
       data.forEach(row => {
         const date = row.Date;
-        dailyTotals[date] = (dailyTotals[date] || 0) + Number(row.Total);
+        const formatted = formatDate(date);
+        dailyTotals[formatted] = (dailyTotals[formatted] || 0) + Number(row.Total);
       });
 
       const dailyLabels = Object.keys(dailyTotals).reverse();
@@ -173,7 +181,6 @@
         }
       });
 
-      // MONTHLY LINE CHART (Monthly Tab)
       const monthlyTotals = {};
       data.forEach(row => {
         const month = row.MonthYear;
@@ -203,11 +210,9 @@
       const items = {};
 
       data.forEach(row => {
-        const date = row.Date;
-        daily[date] = (daily[date] || 0) + Number(row.Total);
-
-        const item = row.Item;
-        items[item] = (items[item] || 0) + Number(row["Qty."]);
+        const formattedDate = formatDate(row.Date);
+        daily[formattedDate] = (daily[formattedDate] || 0) + Number(row.Total);
+        items[row.Item] = (items[row.Item] || 0) + Number(row["Qty."]);
       });
 
       const bestDay = Object.entries(daily).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
@@ -216,7 +221,6 @@
       document.getElementById("bestDay").textContent = bestDay;
       document.getElementById("insightTopItem").textContent = topItem;
 
-      // This Week's Total (last 7 days based on date string)
       const recentTotal = Object.entries(daily)
         .slice(-7)
         .reduce((sum, [, v]) => sum + v, 0);
