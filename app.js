@@ -205,6 +205,12 @@ applyFilters();
 
 let rawData = [];
 let filteredData = [];
+let showingLowStock = false;
+let weeklyDonutChartInstance;
+let monthlyBarChartInstance;
+
+
+
 
 const now = new Date();
 let selectedYear = now.getFullYear().toString();
@@ -221,15 +227,24 @@ fetch(apiUrl)
   });
   ;
 }*/
-fetch(apiUrl)
+
+function fetchSaleItemsData() {
+  showLoading(true); 
+fetch(`${apiUrl}?action=getSaleItems`)
   .then(res => res.json())
   .then(data => {
     rawData = data;
+    console.log(data);
     populateYearOptions(data); // 👈 add this
-    applyFilters(); // 👈 filtered first render
+    applyFilters();
+    showLoading(false); // 👈 filtered first render
+  })
+  .catch(err => {
+    console.error("Error fetching sale items data:", err);
+    showLoading(false); // Hide loading spinner in case of error
   });
-  ;
   
+}
   function buildTable(data) {
     const table = document.querySelector('#salesTable');
     const thead = table.querySelector('thead');
@@ -446,6 +461,25 @@ function buildInsights(data) {
     .reduce((sum, [, , , , total]) => sum + Number(total), 0);
 
   document.getElementById("weekTotal").textContent = formatCurrency(recentTotal);
+
+  // 🔽 Fetch inventory and find top 5 low stock items
+  fetch(apiUrl + '?action=getInventory')
+    .then(res => res.json())
+    .then(inventoryData => {
+      console.log(inventoryData);
+      const lowStockItems = inventoryData
+        .filter(item => Number(item.CurrentStock) < Number(item.ReorderLevel))
+        .sort((a, b) => Number(a.CurrentStock) - Number(b.CurrentStock))
+        .slice(0, 5)
+        .map(item => `${item.ItemName} : ${item.CurrentStock}`);
+
+      document.getElementById("lowStockItems").textContent = lowStockItems.join(", ") || 'All good!';
+    })
+    .catch(err => {
+      console.error("Error fetching inventory for insights:", err);
+      document.getElementById("lowStockItems").textContent = 'Unable to fetch';
+    });
+
 }
 
 function buildMonthlySummary(data) {
@@ -598,7 +632,12 @@ function applyFilters() {
   buildWeeklyTable(filteredData);
   // buildCharts(filteredData);
   buildMonthlySummary(filteredData); 
+  fetchInventoryData();
   buildInsights(filteredData);
+  buildWeeklyDonutChart(filteredData); 
+  buildMonthlyBarChart(filteredData);
+
+
 }
 
 function handleCredentialResponse(response) {
@@ -622,6 +661,191 @@ function parseJwt(token) {
   return JSON.parse(json);
 }
 
+function buildInventoryTable(data) {
+  const tbody = document.getElementById("inventoryTableBody");
+  tbody.innerHTML = '';
+
+  // Filter if toggle is active
+  const filtered = showingLowStock
+    ? data.filter(row => Number(row.CurrentStock) < Number(row.ReorderLevel))
+    : data;
+
+  // Sort by lowest stock
+  filtered
+    .sort((a, b) => a.CurrentStock - b.CurrentStock)
+    .forEach(row => {
+      const tr = document.createElement("tr");
+
+      for (let key in row) {
+        const td = document.createElement("td");
+        td.textContent = row[key];
+
+        // Highlight low stock
+        if (key === "CurrentStock" && Number(row.CurrentStock) < Number(row.ReorderLevel)) {
+          td.classList.add("text-danger", "fw-bold");
+        }
+
+        tr.appendChild(td);
+      }
+
+      tbody.appendChild(tr);
+    });
+}
+
+
+
+function showLoading(isLoading) {
+  const spinner = document.getElementById("loadingSpinner");
+  const body = document.body;
+
+  if (isLoading) {
+    spinner.style.display = "flex"; // Show the spinner
+    body.classList.add("blur"); // Apply blur effect to the body
+  } else {
+    spinner.style.display = "none"; // Hide the spinner
+    body.classList.remove("blur"); // Remove the blur effect from body
+  }
+}
+
+// 📦 Fetch inventory data
+function fetchInventoryData() {
+  showLoading(true); // Show loading spinner and blur page
+
+  fetch(apiUrl + '?action=getInventory')
+    .then(response => response.json())
+    .then(data => {
+      // inventoryData = data;
+      buildInventoryTable(data);
+      showLoading(false); // Hide loading spinner and unblur the page
+    })
+    .catch(err => {
+      console.error("Error fetching inventory data:", err);
+      showLoading(false); // Hide loading spinner in case of error
+    });
+}
+
+
+
+function buildWeeklyDonutChart(data) {
+  const weeks = {};
+
+  data.forEach(row => {
+    const dateObj = new Date(row.Date);
+    const day = dateObj.getDay();
+    const weekStart = new Date(dateObj);
+    weekStart.setDate(dateObj.getDate() - day);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    const weekKey = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+    weeks[weekKey] = (weeks[weekKey] || 0) + Number(row.Total);
+  });
+
+  const labels = Object.keys(weeks);
+  const values = Object.values(weeks);
+
+  // ✅ Clean up existing chart safely
+  if (weeklyDonutChartInstance instanceof Chart) {
+    weeklyDonutChartInstance.destroy();
+  }
+
+  const ctx = document.getElementById('weeklyDonutChart').getContext('2d');
+  weeklyDonutChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Weekly Sales',
+        data: values,
+        backgroundColor: [
+          '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e',
+          '#e74a3b', '#858796', '#20c9a6', '#5a5c69'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem) => {
+              const value = tooltipItem.raw;
+              return `₹${Number(value).toFixed(2)}`;
+            }
+          }
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+    
+  });
+}
+
+
+
+function buildMonthlyBarChart(data) {
+  const monthly = {};
+
+  data.forEach(row => {
+    const date = new Date(row.Date);
+    const monthKey = date.toLocaleString('default', { month: 'short', year: 'numeric' }); // "Mar 2025"
+    monthly[monthKey] = (monthly[monthKey] || 0) + Number(row.Total);
+  });
+
+  const labels = Object.keys(monthly);
+  const values = Object.values(monthly);
+
+  // Cleanup existing chart if exists
+  if (monthlyBarChartInstance instanceof Chart) {
+    monthlyBarChartInstance.destroy();
+  }
+
+  const ctx = document.getElementById("monthlyBarChart").getContext("2d");
+
+  monthlyBarChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Monthly Sales',
+        data: values,
+        backgroundColor: '#4e73df',
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              return `₹${value.toFixed(2)}`;
+            }
+          }
+        }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context) => `₹${context.raw.toFixed(2)}`
+          }
+        },
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+}
+
+
+
 
 document.getElementById("yearSelect").addEventListener("change", e => {
   selectedYear = e.target.value;
@@ -633,4 +857,20 @@ document.getElementById("monthSelect").addEventListener("change", e => {
   applyFilters();
 });
 
+// 🔄 Connect refresh button
+document.getElementById("refreshInventoryBtn").addEventListener("click", () => {
+  fetch(`${apiUrl}?action=updateInventory`)
+    .then(() => fetchInventoryData())
+    .catch(err => alert("Failed to refresh inventory"));
+});
+
 document.getElementById("monthSelect").value = selectedMonth;
+
+document.getElementById("lowStockSwitch").addEventListener("change", (e) => {
+  showingLowStock = e.target.checked;
+  fetchInventoryData();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  fetchSaleItemsData();
+});
