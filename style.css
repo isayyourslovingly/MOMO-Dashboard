@@ -20,7 +20,7 @@ body {
   .chart-container {
     margin-top: 2rem;
   }
-  
+
   #globalFilters label {
     font-weight: 500;
   }
@@ -32,3 +32,9 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   
+  td:nth-child(2),
+td:nth-child(6),
+.summary-card .card-value {
+  font-weight: 600;
+  color: #198754;
+}

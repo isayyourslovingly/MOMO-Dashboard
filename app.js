@@ -9,6 +9,9 @@ function formatDate(dateStr) {
   });
 }
 
+function formatCurrency(value) {
+  return `₹${Number(value).toFixed(2)}`;
+}
 
 let rawData = [];
 let filteredData = [];
@@ -27,7 +30,7 @@ fetch(apiUrl)
   ;
 
 function buildTable(data) {
-  const headers = Object.keys(data[0]);
+  const headers = Object.keys(data[0]).filter(h => h !== 'MonthYear' && h.trim() !== '');
   const thead = document.querySelector('#salesTable thead tr');
   const tbody = document.querySelector('#salesTable tbody');
   thead.innerHTML = ''; tbody.innerHTML = '';
@@ -42,7 +45,14 @@ function buildTable(data) {
     const tr = document.createElement('tr');
     headers.forEach(h => {
       const td = document.createElement('td');
-      td.textContent = h === 'Date' ? formatDate(row[h]) : row[h];
+      if (h === 'Date') {
+        td.textContent = formatDate(row[h]);
+      } else if (h === 'Total') {
+        td.textContent = formatCurrency(row[h]);
+      } else {
+        td.textContent = row[h];
+      }
+      
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
@@ -69,7 +79,7 @@ function buildSummary(data) {
 
   const topItem = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
-  document.getElementById("totalSales").textContent = totalSales.toLocaleString();
+  document.getElementById("totalSales").textContent = formatCurrency(totalSales);
   document.getElementById("totalQty").textContent = totalQty;
   document.getElementById("topItem").textContent = topItem;
 }
@@ -115,11 +125,11 @@ function buildWeeklyTable(data) {
 
     tr.innerHTML = `
       <td>${weekRange}</td>
-      <td>₹${stats.total.toLocaleString()}</td>
+      <td>₹${formatCurrency(stats.total)}</td>
       <td>${topItem}</td>
       <td>${leastItem}</td>
       <td>${bestDay[0]}</td>
-      <td>₹${bestDay[1].toLocaleString()}</td>
+      <td>₹${formatCurrency(bestDay[1])}</td>
     `;
 
     tbody.appendChild(tr);
@@ -179,7 +189,7 @@ function buildInsights(data) {
     })
     .reduce((sum, [, , , , total]) => sum + Number(total), 0);
 
-  document.getElementById("weekTotal").textContent = recentTotal.toLocaleString();
+  document.getElementById("weekTotal").textContent = formatCurrency(recentTotal);
 }
 
 function populateYearOptions(data) {
