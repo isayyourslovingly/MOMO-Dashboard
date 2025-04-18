@@ -52,7 +52,7 @@
 
     <!-- Tabs -->
     <ul class="nav nav-pills mb-4" id="viewTabs">
-      <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#itemised">Itemised View</a></li>
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#itemised">Day View</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#weekly">Weekly Summary</a></li>
       <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#monthly">Monthly Trends</a></li>
     </ul>
@@ -88,8 +88,20 @@
 
       <!-- Monthly -->
       <div id="monthly" class="tab-pane fade">
-        <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
-      </div>
+        <h4 class="mt-5">📅 Monthly Insights</h4>
+        <table class="table table-bordered" id="monthlyTable">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Total Sales</th>
+              <th>Top Item</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="monthlyTableBody">
+            <!-- JS inserts rows here -->
+          </tbody>
+        </table>        
     </div>
 
     <!-- Insights -->

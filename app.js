@@ -13,11 +13,203 @@ function formatCurrency(value) {
   return `₹${Number(value).toFixed(2)}`;
 }
 
+
+/*
+// MOCK DATA (replace fetch with this)
+const rawData = [
+  {
+    Date: "2025-03-25",
+    Item: "Classic Veg Momos",
+    Code: "[New] 1",
+    "Qty.": 2,
+    Total: 158,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-25",
+    Item: "Chicken Schezwan Momos",
+    Code: "[New] 6",
+    "Qty.": 1,
+    Total: 109,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-26",
+    Item: "Water Bottle 1ltr",
+    Code: "water bottle 1ltr",
+    "Qty.": 3,
+    Total: 60,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-26",
+    Item: "French Fries",
+    Code: "[New] 66",
+    "Qty.": 2,
+    Total: 198,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-04-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-05-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-06-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-05-27",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-04-02",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-31",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-30",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  {
+    Date: "2025-03-28",
+    Item: "Paneer Mo-Burger",
+    Code: "[New] 70",
+    "Qty.": 1,
+    Total: 99,
+    MonthYear: "March-2025"
+  },
+  // 👉 Add ~25 more rows by duplicating and adjusting dates/items
+];
+
+let filteredData = rawData;
+
+const now = new Date();
+let selectedYear = now.getFullYear().toString();
+let selectedMonth = String(now.getMonth() + 1).padStart(2, '0'); // '01'-'12'
+
+
+// Call render manually since no fetch
+populateYearOptions(rawData);
+applyFilters();
+
+
+*/
+
+
 let rawData = [];
 let filteredData = [];
 
-let selectedYear = '';
-let selectedMonth = '';
+const now = new Date();
+let selectedYear = now.getFullYear().toString();
+let selectedMonth = String(now.getMonth() + 1).padStart(2, '0'); // '01'-'12'
+
 
 
 fetch(apiUrl)
@@ -28,6 +220,7 @@ fetch(apiUrl)
     applyFilters(); // 👈 filtered first render
   });
   ;
+  
 
   function buildTable(data) {
     const table = document.querySelector('#salesTable');
@@ -247,6 +440,103 @@ function buildInsights(data) {
   document.getElementById("weekTotal").textContent = formatCurrency(recentTotal);
 }
 
+function buildMonthlySummary(data) {
+  const months = {};
+
+  // Group by MonthYear
+  data.forEach(row => {
+    const date = new Date(row.Date);
+    const key = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  
+    if (!months[key]) {
+      months[key] = {
+        total: 0,
+        items: {},
+        days: {},
+        rawRows: []
+      };
+    }
+  
+    months[key].total += Number(row.Total);
+    const item = row.Item;
+    const qty = Number(row["Qty."]);
+    const dateFormatted = formatDate(row.Date);
+  
+    months[key].items[item] = (months[key].items[item] || 0) + qty;
+    months[key].days[dateFormatted] = (months[key].days[dateFormatted] || 0) + Number(row.Total);
+    months[key].rawRows.push(row);
+  });
+  
+  const tbody = document.getElementById("monthlyTableBody");
+  tbody.innerHTML = '';
+
+  Object.entries(months).forEach(([monthYear, stats], index) => {
+    const topItem = Object.entries(stats.items).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
+    const leastItem = Object.entries(stats.items).filter(([_, qty]) => qty > 0).sort((a, b) => a[1] - b[1])[0]?.[0] || '-';
+    const bestDay = Object.entries(stats.days).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
+
+    // Weekly breakdown
+    const weeklyMap = {};
+    stats.rawRows.forEach(row => {
+      const dateObj = new Date(row.Date);
+      const weekStart = new Date(dateObj);
+      weekStart.setDate(dateObj.getDate() - dateObj.getDay());
+      const weekKey = formatDate(weekStart);
+
+      if (!weeklyMap[weekKey]) {
+        weeklyMap[weekKey] = { days: {} };
+      }
+
+      const formatted = formatDate(row.Date);
+      weeklyMap[weekKey].days[formatted] = (weeklyMap[weekKey].days[formatted] || 0) + Number(row.Total);
+    });
+
+    let weeklyTrendHTML = '';
+    Object.entries(weeklyMap).forEach(([weekStart, weekStats]) => {
+      const daySales = weekStats.days;
+      const best = Object.entries(daySales).sort((a, b) => b[1] - a[1])[0];
+      const worst = Object.entries(daySales).sort((a, b) => a[1] - b[1])[0];
+      weeklyTrendHTML += `
+        <div><strong>Week of ${weekStart}:</strong> 🟢 Best: ${best?.[0]} (₹${best?.[1].toFixed(2)}), 🔴 Worst: ${worst?.[0]} (₹${worst?.[1].toFixed(2)})</div>
+      `;
+    });
+
+    // Unique ID for collapse
+    const collapseId = `collapseMonth${index}`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${monthYear}</td>
+      <td>${formatCurrency(stats.total)}</td>
+      <td>${topItem}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false">
+          🔍 View
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+
+    // Collapse row
+    const trCollapse = document.createElement('tr');
+    trCollapse.innerHTML = `
+      <td colspan="4" class="p-0 border-0">
+        <div id="${collapseId}" class="collapse">
+          <div class="p-3 bg-light">
+            <p><strong>Top Item:</strong> ${topItem}</p>
+            <p><strong>Least Item:</strong> ${leastItem}</p>
+            <p><strong>Best Day:</strong> ${bestDay[0]} (${formatCurrency(bestDay[1])})</p>
+            <p><strong>Weekly Trends:</strong></p>
+            ${weeklyTrendHTML}
+          </div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(trCollapse);
+  });
+}
+
+
 function populateYearOptions(data) {
   const yearSet = new Set();
 
@@ -279,6 +569,9 @@ function populateYearOptions(data) {
     option.textContent = year;
     yearSelect.appendChild(option);
   });
+
+    // 👇 Select current year by default
+    yearSelect.value = selectedYear;
 }
 
 function applyFilters() {
@@ -295,7 +588,8 @@ function applyFilters() {
   buildTable(filteredData);
   buildSummary(filteredData);
   buildWeeklyTable(filteredData);
-  buildCharts(filteredData);
+  // buildCharts(filteredData);
+  buildMonthlySummary(filteredData); 
   buildInsights(filteredData);
 }
 
@@ -308,3 +602,5 @@ document.getElementById("monthSelect").addEventListener("change", e => {
   selectedMonth = e.target.value;
   applyFilters();
 });
+
+document.getElementById("monthSelect").value = selectedMonth;
