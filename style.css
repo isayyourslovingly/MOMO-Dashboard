@@ -1,68 +1,155 @@
+/* Reset & Base */
 body {
-    padding: 2rem;
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .summary-card {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    text-align: center;
-  }
-  
-  .card-value {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-  
-  .chart-container {
-    margin-top: 2rem;
-  }
+  padding: 2rem;
+  background-color: #f4f6f8;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  color: #333;
+  transition: filter 0.3s ease;
+}
 
-  #globalFilters label {
-    font-weight: 500;
-  }
-  
-  #globalFilters {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
+h1, h2, h3, h4 {
+  color: #34495e;
+}
 
-  td:nth-child(2),
-td:nth-child(6),
-.summary-card .card-value {
+/* Summary Cards */
+.summary-card {
+  background: #ffffff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-value {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #1abc9c;
+}
+
+/* Filters */
+#globalFilters {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+#globalFilters label {
+  font-weight: 500;
+  color: #555;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+th {
+  background-color: #f8fafc;
   font-weight: 600;
-  color: #198754;
+  color: #555;
 }
 
-body.unauthenticated .container{
-  display: none;
+/* Specific Color for Table Rows Based on Tab */
+#itemised table tbody tr {
+  background-color: #e3f2fd; /* Light Blue */
 }
 
+#weekly table tbody tr {
+  background-color: #e8f5e9; /* Light Green */
+}
+
+#monthly table tbody tr {
+  background-color: #fff3e0; /* Light Yellow */
+}
+
+#inventory table tbody tr {
+  background-color: #f8d7da; /* Light Red */
+}
+
+/* Alternate Row Colors */
+#itemised table tbody tr:nth-child(even),
+#weekly table tbody tr:nth-child(even),
+#monthly table tbody tr:nth-child(even),
+#inventory table tbody tr:nth-child(even) {
+  background-color: #f1f8ff; /* Slightly lighter shade for contrast in blue */
+}
+
+#itemised table tbody tr:nth-child(odd),
+#weekly table tbody tr:nth-child(odd),
+#monthly table tbody tr:nth-child(odd),
+#inventory table tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* White for odd rows to maintain contrast */
+}
+
+/* Highlight Low Stock */
 .low-stock {
-  background-color: #ffe5e5;
-  color: #c00;
+  background-color: #fce4e4;
+  color: #d63031;
   font-weight: bold;
   border-radius: 4px;
   padding: 2px 6px;
 }
 
-/* Toggle switch colors */
-.form-check-input:checked {
-  background-color: #dc3545; /* red for low stock view */
-  border-color: #dc3545;
-}
-
+/* Toggle Switch Styles */
 .form-check-input {
-  background-color: #28a745; /* green when off */
-  border-color: #28a745;
+  appearance: none;
+  width: 42px;
+  height: 22px;
+  background-color: #27ae60;
+  border-radius: 11px;
+  position: relative;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+  cursor: pointer;
 }
 
-/* Loading Spinner */
+.form-check-input:checked {
+  background-color: #e74c3c;
+}
+
+.form-check-input::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background-color: #fff;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
+}
+
+.form-check-input:checked::before {
+  transform: translateX(20px);
+}
+
+/* Label for Toggle */
+.toggle-label {
+  margin-left: 12px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Loading Spinner & Blur */
 .loading-spinner {
   position: fixed;
   top: 0;
@@ -70,7 +157,7 @@ body.unauthenticated .container{
   right: 0;
   bottom: 0;
   background: rgba(255, 255, 255, 0.7);
-  display: none; /* Hidden by default */
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -79,53 +166,110 @@ body.unauthenticated .container{
 .spinner-border {
   width: 3rem;
   height: 3rem;
+  color: #1abc9c;
 }
 
-/* Blur effect on body */
 .blur {
   filter: blur(4px);
-  pointer-events: none; /* Disable interaction while blurred */
+  pointer-events: none;
 }
 
-body {
-  transition: filter 0.3s ease;
-}
-
-#lowStockItems {
-  color: #d9534f; /* red text */
-  font-weight: 500;
-}
-
+/* Chart Layout */
 .chart-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
   margin-top: 20px;
 }
 
 .chart-box {
   flex: 1 1 400px;
-  max-width: 500px;
-  height: 300px; /* ⬅ Set a nice max height */
-  padding: 10px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  max-width: 480px;
+  height: 280px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .chart-box canvas {
   flex: 1;
   width: 100% !important;
   height: 100% !important;
-  position: relative;
 }
 
-@media screen and (max-width: 480px) {
-  .chart-container {
-    max-width: 300px;
+/* Insights */
+#lowStockItems {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+/* Auth Display */
+body.unauthenticated .container {
+  display: none;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .summary-card {
+    margin-bottom: 1rem;
   }
+
+  .chart-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-box {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Tab Navigation (Added Colors for Tabs) */
+#viewTabs .nav-link {
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* Colors for Tabs */
+#viewTabs .nav-link.active {
+  background-color: #4caf50; /* Light Green */
+  color: white;
+}
+
+#viewTabs .nav-link[href="#weekly"] {
+  background-color: #64b5f6; /* Light Blue */
+  color: white;
+}
+
+#viewTabs .nav-link[href="#monthly"] {
+  background-color: #ffcc80; /* Light Orange */
+  color: white;
+}
+
+#viewTabs .nav-link[href="#inventory"] {
+  background-color: #ff7043; /* Light Red */
+  color: white;
+}
+
+/* Active Tab Section Background (Lighten When Active) */
+.tab-content .tab-pane.active {
+  background-color: #f1f8ff; /* Light Blue for Itemized */
+}
+
+#weekly.tab-content .tab-pane.active {
+  background-color: #e8f5e9; /* Light Green */
+}
+
+#monthly.tab-content .tab-pane.active {
+  background-color: #fff3e0; /* Light Yellow */
+}
+
+#inventory.tab-content .tab-pane.active {
+  background-color: #f8d7da; /* Light Red */
 }
