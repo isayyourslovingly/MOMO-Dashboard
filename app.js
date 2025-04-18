@@ -1,4 +1,4 @@
-const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec'; // Replace this with your actual Apps Script URL
+const apiUrl = 'YOUR_WEB_APP_URL_HERE'; // Replace this with your actual Apps Script URL
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -110,4 +110,70 @@ function buildWeeklyTable(data) {
     const bestDay = Object.entries(stats.days).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
 
     tr.innerHTML = `
-      <
+      <td>${weekRange}</td>
+      <td>₹${stats.total.toLocaleString()}</td>
+      <td>${topItem}</td>
+      <td>${leastItem}</td>
+      <td>${bestDay[0]}</td>
+      <td>₹${bestDay[1].toLocaleString()}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+function buildCharts(data) {
+  const monthly = {};
+
+  data.forEach(row => {
+    const monthYear = row.MonthYear;
+    monthly[monthYear] = (monthly[monthYear] || 0) + Number(row.Total);
+  });
+
+  const ctx = document.getElementById('monthlyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Object.keys(monthly),
+      datasets: [{
+        label: 'Monthly Sales',
+        data: Object.values(monthly),
+        fill: false,
+        borderColor: '#4e73df',
+        tension: 0.3
+      }]
+    }
+  });
+}
+
+function buildInsights(data) {
+  const totalsByDate = {};
+  const itemCount = {};
+
+  data.forEach(row => {
+    const date = formatDate(row.Date);
+    totalsByDate[date] = (totalsByDate[date] || 0) + Number(row.Total);
+    itemCount[row.Item] = (itemCount[row.Item] || 0) + Number(row["Qty."]);
+  });
+
+  const bestDay = Object.entries(totalsByDate).sort((a, b) => b[1] - a[1])[0];
+  const topItem = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0];
+
+  document.getElementById("bestDay").textContent = bestDay?.[0] || '-';
+  document.getElementById("insightTopItem").textContent = topItem?.[0] || '-';
+
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - now.getDay());
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+
+  const recentTotal = data
+    .filter(row => {
+      const date = new Date(row.Date);
+      return date >= start && date <= end;
+    })
+    .reduce((sum, [, , , , total]) => sum + Number(total), 0);
+
+  document.getElementById("weekTotal").textContent = recentTotal.toLocaleString();
+}
