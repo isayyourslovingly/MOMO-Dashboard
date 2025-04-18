@@ -29,42 +29,97 @@ fetch(apiUrl)
   });
   ;
 
-function buildTable(data) {
-  const headers = Object.keys(data[0]).filter(h => h !== 'MonthYear' && h.trim() !== '');
-  const thead = document.querySelector('#salesTable thead tr');
-  const tbody = document.querySelector('#salesTable tbody');
-  thead.innerHTML = ''; tbody.innerHTML = '';
-
-  headers.forEach(h => {
-    const th = document.createElement('th');
-    th.textContent = h;
-    thead.appendChild(th);
-  });
-
-  data.forEach(row => {
-    const tr = document.createElement('tr');
-    headers.forEach(h => {
-      const td = document.createElement('td');
-      if (h === 'Date') {
-        td.textContent = formatDate(row[h]);
-      } else if (h === 'Total') {
-        td.textContent = formatCurrency(row[h]);
-      } else {
-        td.textContent = row[h];
-      }
-      
-      tr.appendChild(td);
+  function buildTable(data) {
+    const table = document.querySelector('#salesTable');
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
+    thead.innerHTML = `
+      <tr>
+        <th>Date</th>
+        <th>Total Qty.</th>
+        <th>Subtotal</th>
+        <th>Top Item</th>
+        <th></th>
+      </tr>
+    `;
+    tbody.innerHTML = '';
+  
+    // Group data by Date
+    const grouped = {};
+    data.forEach(row => {
+      const date = formatDate(row.Date);
+      if (!grouped[date]) grouped[date] = [];
+      grouped[date].push(row);
     });
-    tbody.appendChild(tr);
-  });
-
-  document.querySelector('#searchInput').addEventListener('input', e => {
-    const term = e.target.value.toLowerCase();
-    tbody.querySelectorAll('tr').forEach(tr => {
-      tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
+  
+    Object.entries(grouped).forEach(([date, items], index) => {
+      const collapseId = `collapse-${index}`;
+      const totalQty = items.reduce((sum, i) => sum + Number(i["Qty."]), 0);
+      const subtotal = items.reduce((sum, i) => sum + Number(i.Total), 0);
+      const topItem = Object.entries(items.reduce((acc, i) => {
+        acc[i.Item] = (acc[i.Item] || 0) + Number(i["Qty."]);
+        return acc;
+      }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
+  
+      // Main row (summary)
+      const summaryRow = document.createElement('tr');
+      summaryRow.innerHTML = `
+        <td>${date}</td>
+        <td>${totalQty}</td>
+        <td>${formatCurrency(subtotal)}</td>
+        <td>${topItem}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" 
+                  data-bs-toggle="collapse" 
+                  data-bs-target="#${collapseId}">
+            View
+          </button>
+        </td>
+      `;
+      tbody.appendChild(summaryRow);
+  
+      // Expandable detail row
+      const detailsRow = document.createElement('tr');
+      detailsRow.innerHTML = `
+        <td colspan="5" class="p-0 border-0">
+          <div class="collapse" id="${collapseId}">
+            <div class="p-2">
+              <table class="table table-sm mb-0 table-bordered">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Code</th>
+                    <th>Qty.</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${items.map(item => `
+                    <tr>
+                      <td>${item.Item}</td>
+                      <td>${item.Code}</td>
+                      <td>${item["Qty."]}</td>
+                      <td>${formatCurrency(item.Total)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(detailsRow);
     });
-  });
-}
+  
+    // Search filter still applies
+    document.querySelector('#searchInput').addEventListener('input', e => {
+      const term = e.target.value.toLowerCase();
+      tbody.querySelectorAll('tr').forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
+      });
+    });
+  }
+  
 
 function buildSummary(data) {
   let totalSales = 0;
@@ -73,14 +128,14 @@ function buildSummary(data) {
 
   data.forEach(row => {
     totalSales += Number(row.Total);
-    totalQty += Number(row["Qty."]);
-    itemCount[row.Item] = (itemCount[row.Item] || 0) + Number(row["Qty."]);
+    totalQty += parseInt(row["Qty."]);
+    itemCount[row.Item] = (itemCount[row.Item] || 0) + parseInt(row["Qty."]);
   });
 
   const topItem = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
   document.getElementById("totalSales").textContent = formatCurrency(totalSales);
-  document.getElementById("totalQty").textContent = totalQty;
+  document.getElementById("totalQty").textContent = totalQty.toLocaleString();
   document.getElementById("topItem").textContent = topItem;
 }
 
@@ -125,11 +180,11 @@ function buildWeeklyTable(data) {
 
     tr.innerHTML = `
       <td>${weekRange}</td>
-      <td>₹${formatCurrency(stats.total)}</td>
+      <td>${formatCurrency(stats.total)}</td>
       <td>${topItem}</td>
       <td>${leastItem}</td>
       <td>${bestDay[0]}</td>
-      <td>₹${formatCurrency(bestDay[1])}</td>
+      <td>${formatCurrency(bestDay[1])}</td>
     `;
 
     tbody.appendChild(tr);
