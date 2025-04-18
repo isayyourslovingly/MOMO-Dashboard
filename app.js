@@ -21,14 +21,6 @@ fetch(apiUrl)
   .then(res => res.json())
   .then(data => {
     rawData = data;
-    buildTable(data);
-    buildSummary(data);
-    buildWeeklyTable(data);
-    buildCharts(data);
-    buildInsights(data);
-  })
-  .then(data => {
-    rawData = data;
     populateYearOptions(data); // 👈 add this
     applyFilters(); // 👈 filtered first render
   });
