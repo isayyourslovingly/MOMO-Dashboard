@@ -9,7 +9,13 @@ function formatDate(dateStr) {
   });
 }
 
+
 let rawData = [];
+let filteredData = [];
+
+let selectedYear = '';
+let selectedMonth = '';
+
 
 fetch(apiUrl)
   .then(res => res.json())
@@ -20,7 +26,13 @@ fetch(apiUrl)
     buildWeeklyTable(data);
     buildCharts(data);
     buildInsights(data);
+  })
+  .then(data => {
+    rawData = data;
+    populateYearOptions(data); // 👈 add this
+    applyFilters(); // 👈 filtered first render
   });
+  ;
 
 function buildTable(data) {
   const headers = Object.keys(data[0]);
@@ -177,3 +189,65 @@ function buildInsights(data) {
 
   document.getElementById("weekTotal").textContent = recentTotal.toLocaleString();
 }
+
+function populateYearOptions(data) {
+  const yearSet = new Set();
+
+  data.forEach(row => {
+    let dateStr = row.Date;
+
+    // Try to parse reliably even if it's in "DD-MM-YYYY"
+    let dateParts = dateStr.split(/[-/]/);
+    let year;
+
+    if (dateParts[2]?.length === 4) {
+      // assume DD-MM-YYYY or DD/MM/YYYY
+      year = dateParts[2];
+    } else {
+      // fallback if it's ISO or Date object
+      year = new Date(dateStr).getFullYear();
+    }
+
+    if (!isNaN(year)) {
+      yearSet.add(year);
+    }
+  });
+
+  const yearSelect = document.getElementById("yearSelect");
+  yearSelect.innerHTML = `<option value="">All</option>`;
+
+  [...yearSet].sort((a, b) => b - a).forEach(year => {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
+  });
+}
+
+function applyFilters() {
+  filteredData = rawData.filter(row => {
+    const dateObj = new Date(row.Date);
+    const y = dateObj.getFullYear().toString();
+    const m = ("0" + (dateObj.getMonth() + 1)).slice(-2); // '01'-'12'
+
+    return (!selectedYear || y === selectedYear) &&
+           (!selectedMonth || m === selectedMonth);
+  });
+
+  // rebuild all views
+  buildTable(filteredData);
+  buildSummary(filteredData);
+  buildWeeklyTable(filteredData);
+  buildCharts(filteredData);
+  buildInsights(filteredData);
+}
+
+document.getElementById("yearSelect").addEventListener("change", e => {
+  selectedYear = e.target.value;
+  applyFilters();
+});
+
+document.getElementById("monthSelect").addEventListener("change", e => {
+  selectedMonth = e.target.value;
+  applyFilters();
+});
