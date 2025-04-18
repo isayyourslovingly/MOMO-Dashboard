@@ -211,7 +211,7 @@ let selectedYear = now.getFullYear().toString();
 let selectedMonth = String(now.getMonth() + 1).padStart(2, '0'); // '01'-'12'
 
 
-
+function initDashboard() {
 fetch(apiUrl)
   .then(res => res.json())
   .then(data => {
@@ -220,7 +220,7 @@ fetch(apiUrl)
     applyFilters(); // 👈 filtered first render
   });
   ;
-  
+}
 
   function buildTable(data) {
     const table = document.querySelector('#salesTable');
@@ -592,6 +592,28 @@ function applyFilters() {
   buildMonthlySummary(filteredData); 
   buildInsights(filteredData);
 }
+
+function handleCredentialResponse(response) {
+  const userData = parseJwt(response.credential);
+  const allowedEmails = ["isayyourslovingly@gmail.com", "someoneelse@domain.com"];
+
+  if (allowedEmails.includes(userData.email)) {
+    document.body.classList.remove("unauthenticated");
+    initDashboard(); // your normal loading logic
+  } else {
+    alert("Access denied. Not an authorized user.");
+  }
+}
+
+// Helper to decode JWT token
+function parseJwt(token) {
+  const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+  const json = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(json);
+}
+
 
 document.getElementById("yearSelect").addEventListener("change", e => {
   selectedYear = e.target.value;
