@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Sales Dashboard</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>📊 My Sales Dashboard</h1>
+  <div id="summary"></div>
+  <h2>Itemised Sales</h2>
+  <table id="salesTable">
+    <thead><tr></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec';
+
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (data.length === 0) return;
+
+        const headers = Object.keys(data[0]);
+        const thead = document.querySelector('#salesTable thead tr');
+        const tbody = document.querySelector('#salesTable tbody');
+
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          thead.appendChild(th);
+        });
+
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        // Optionally generate some summary info
+        document.getElementById("summary").innerHTML =
+          `<p>Total Entries: <strong>${data.length}</strong></p>`;
+      });
+  </script>
+</body>
+</html>
