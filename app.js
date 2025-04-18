@@ -210,7 +210,7 @@ const now = new Date();
 let selectedYear = now.getFullYear().toString();
 let selectedMonth = String(now.getMonth() + 1).padStart(2, '0'); // '01'-'12'
 
-
+/*
 function initDashboard() {
 fetch(apiUrl)
   .then(res => res.json())
@@ -220,8 +220,16 @@ fetch(apiUrl)
     applyFilters(); // 👈 filtered first render
   });
   ;
-}
-
+}*/
+fetch(apiUrl)
+  .then(res => res.json())
+  .then(data => {
+    rawData = data;
+    populateYearOptions(data); // 👈 add this
+    applyFilters(); // 👈 filtered first render
+  });
+  ;
+  
   function buildTable(data) {
     const table = document.querySelector('#salesTable');
     const thead = table.querySelector('thead');
