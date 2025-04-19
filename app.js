@@ -336,6 +336,7 @@ fetch(`${apiUrl}?action=getSaleItems`)
       });
     });
   }
+ 
   
 
 function buildSummary(data) {
@@ -828,11 +829,18 @@ function buildInventoryTable(data) {
       for (let key in row) {
         const td = document.createElement("td");
         td.textContent = row[key];
+        
 
         // Highlight low stock
         if (key === "CurrentStock" && Number(row.CurrentStock) < Number(row.ReorderLevel)) {
           td.classList.add("text-danger", "fw-bold");
         }
+        if (key === "Last Updated") {
+          
+          td.textContent = formatDate(row[key]);
+        }
+        
+
 
         tr.appendChild(td);
       }
@@ -1090,6 +1098,40 @@ function animateValue(element, start, end, duration) {
 }
 
 
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('table thead th').forEach((th, colIndex) => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => {
+      const table = th.closest('table');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => {
+        // ✅ Skip rows with colspans or unexpected structure
+        return row.children.length === table.tHead.rows[0].children.length;
+      });
+console.log(rows);
+      const asc = th.classList.toggle('asc');
+
+      rows.sort((a, b) => {
+        const cellA = a.children[colIndex]?.innerText.trim() || '';
+        const cellB = b.children[colIndex]?.innerText.trim() || '';
+
+        const numA = parseFloat(cellA.replace(/[^0-9.-]+/g, ''));
+        const numB = parseFloat(cellB.replace(/[^0-9.-]+/g, ''));
+
+        const isNumber = !isNaN(numA) && !isNaN(numB);
+        if (isNumber) return asc ? numA - numB : numB - numA;
+        return asc
+          ? cellA.localeCompare(cellB)
+          : cellB.localeCompare(cellA);
+      });
+
+      tbody.innerHTML = '';
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+});
+
+
 
 document.getElementById("yearSelect").addEventListener("change", e => {
   selectedYear = e.target.value;
@@ -1107,6 +1149,18 @@ document.getElementById("refreshInventoryBtn").addEventListener("click", () => {
     .then(() => fetchInventoryData())
     .catch(err => alert("Failed to refresh inventory"));
 });
+
+document.getElementById('inventorySearch').addEventListener('input', function () {
+  const query = this.value.toLowerCase();
+  const rows = document.querySelectorAll('#inventoryTableBody tr');
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? '' : 'none';
+  });
+});
+
+
 
 document.getElementById("monthSelect").value = selectedMonth;
 
