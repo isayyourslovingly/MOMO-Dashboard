@@ -1,3 +1,6 @@
+/* =====================
+   🌐 Base Styles
+===================== */
 body {
   padding: 2rem;
   background-color: #fffdf5;
@@ -6,7 +9,14 @@ body {
   transition: filter 0.3s ease;
 }
 
-/* Logo styling */
+.blur {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* =====================
+   📛 Branding & Logos
+===================== */
 .dashboard-logo {
   height: 1.8em;
   vertical-align: middle;
@@ -14,7 +24,9 @@ body {
   margin-right: 0.5rem;
 }
 
-/* 🌟 Elegant Summary Cards */
+/* =====================
+   ✨ Summary Cards
+===================== */
 .summary-card {
   padding: 1.2rem;
   border-radius: 12px;
@@ -27,6 +39,7 @@ body {
 
 .summary-card:hover {
   transform: translateY(-4px);
+  background-color: #fff9e8;
 }
 
 .card-value {
@@ -46,28 +59,15 @@ body {
   transform: scale(1.1);
 }
 
-/* 🌈 Golden Themed Summary Cards */
-.col-md-3:nth-child(1) .summary-card {
-  background-color: #fff7d6;
-  color: #c18f00;
-}
+/* 🌈 Golden Color Variants */
+.col-md-3:nth-child(1) .summary-card { background-color: #fff7d6; color: #c18f00; }
+.col-md-3:nth-child(2) .summary-card { background-color: #fdf4e3; color: #a87600; }
+.col-md-3:nth-child(3) .summary-card { background-color: #fffbea; color: #b89100; }
+.col-md-3:nth-child(4) .summary-card { background-color: #fff2db; color: #b25c00; }
 
-.col-md-3:nth-child(2) .summary-card {
-  background-color: #fdf4e3;
-  color: #a87600;
-}
-
-.col-md-3:nth-child(3) .summary-card {
-  background-color: #fffbea;
-  color: #b89100;
-}
-
-.col-md-3:nth-child(4) .summary-card {
-  background-color: #fff2db;
-  color: #b25c00;
-}
-
-/* Global Filter Section */
+/* =====================
+   🎛️ Global Filters
+===================== */
 #globalFilters {
   background: #fffbe6;
   padding: 1rem;
@@ -79,7 +79,9 @@ body {
   font-weight: 500;
 }
 
-/* Chart styling */
+/* =====================
+   📊 Charts
+===================== */
 .chart-container {
   margin-top: 2rem;
 }
@@ -111,7 +113,9 @@ body {
   height: 100% !important;
 }
 
-/* Tabs */
+/* =====================
+   🧭 Navigation Tabs
+===================== */
 #viewTabs .nav-link {
   font-weight: 600;
   color: #333;
@@ -124,27 +128,12 @@ body {
   color: #fff !important;
 }
 
-#viewTabs .nav-link.active[href="#itemised"] {
-  background-color: #c18f00;
-}
+#viewTabs .nav-link.active[href="#itemised"]   { background-color: #c18f00; }
+#viewTabs .nav-link.active[href="#weekly"]     { background-color: #a87600; }
+#viewTabs .nav-link.active[href="#monthly"]    { background-color: #b89100; }
+#viewTabs .nav-link.active[href="#inventory"]  { background-color: #b25c00; }
+#viewTabs .nav-link.active[href="#expenses"]   { background-color: #aa3f00; }
 
-#viewTabs .nav-link.active[href="#weekly"] {
-  background-color: #a87600;
-}
-
-#viewTabs .nav-link.active[href="#monthly"] {
-  background-color: #b89100;
-}
-
-#viewTabs .nav-link.active[href="#inventory"] {
-  background-color: #b25c00;
-}
-
-#viewTabs .nav-link.active[href="#expenses"] {
-  background-color: #aa3f00;
-}
-
-/* Tab Content */
 .tab-content > .tab-pane.active {
   background-color: #fffef9;
   padding: 1rem;
@@ -152,7 +141,9 @@ body {
   transition: background-color 0.5s ease-in-out;
 }
 
-/* Table Styling */
+/* =====================
+   📋 Tables
+===================== */
 table {
   background-color: #fff;
   border-radius: 6px;
@@ -171,13 +162,28 @@ table tbody tr:nth-child(even) {
   background-color: #fdf7e4;
 }
 
+.table th,
+.table td {
+  vertical-align: middle;
+  font-size: 0.85rem;
+  padding: 8px;
+}
+
 td:nth-child(2),
 td:nth-child(6),
 .summary-card .card-value {
   font-weight: 600;
 }
 
-/* Inventory & Low Stock */
+.table-sm th,
+.table-sm td {
+  padding: 4px 6px;
+  font-size: 0.85rem;
+}
+
+/* =====================
+   📦 Inventory
+===================== */
 .low-stock {
   background-color: #fff3cd;
   color: #856404;
@@ -191,7 +197,9 @@ td:nth-child(6),
   font-weight: 500;
 }
 
-/* Toggle Switches */
+/* =====================
+   🧪 Toggles
+===================== */
 .form-check-input:checked {
   background-color: #c18f00;
   border-color: #c18f00;
@@ -202,13 +210,12 @@ td:nth-child(6),
   border-color: #aaa;
 }
 
-/* Loading Spinner */
+/* =====================
+   ⏳ Loading Spinner
+===================== */
 .loading-spinner {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(255, 255, 255, 0.7);
   display: none;
   align-items: center;
@@ -222,15 +229,11 @@ td:nth-child(6),
   color: #c18f00;
 }
 
-.blur {
-  filter: blur(4px);
-  pointer-events: none;
-}
-
-/* Mobile Responsiveness */
+/* =====================
+   📱 Mobile Tweaks
+===================== */
 @media screen and (max-width: 768px) {
-  .chart-row,
-  .chart-box {
+  .chart-row, .chart-box {
     display: none !important;
   }
 
@@ -265,4 +268,85 @@ td:nth-child(6),
   .tab-content {
     font-size: 0.95rem;
   }
+}
+
+/* =====================
+   ✨ Modern Visual Enhancements
+===================== */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+}
+
+.rounded-pill {
+  border-radius: 999px !important;
+  padding: 6px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.rounded-pill:hover {
+  transform: scale(1.05);
+}
+/* 🎯 Insights Section */
+.insight-list {
+  border: none;
+  padding: 0;
+  border-radius: 12px;
+}
+
+.insight-item {
+  margin-bottom: 0.5rem;
+  border: none;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  background: #fffef5;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.insight-item strong {
+  font-weight: bold;
+}
+
+.insight-item .text-success {
+  font-weight: bold;
+}
+
+.insight-item .text-danger {
+  font-weight: bold;
+}
+
+/* Mobile Optimization */
+@media screen and (max-width: 600px) {
+  .insight-item {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+}
+
+.emoji {
+  font-size: 2rem;
+  display: block;
+}
+
+.summary-card .label {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 0.2rem;
+}
+
+.summary-card {
+  border-radius: 1rem;
+  background-color: #fff;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
 }

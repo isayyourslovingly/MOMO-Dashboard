@@ -518,15 +518,15 @@ function buildInsights(data) {
 
 }
 
-function buildMonthlySummary(data,filteredExpenseData) {
+function buildMonthlySummary(data, filteredExpenseData) {
   const months = {};
-  const monthlyExpenses = {}; 
+  const monthlyExpenses = {};
 
-  // Group by MonthYear
+  // Group sales data by MonthYear
   data.forEach(row => {
     const date = new Date(row.Date);
     const key = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-  
+
     if (!months[key]) {
       months[key] = {
         total: 0,
@@ -535,31 +535,42 @@ function buildMonthlySummary(data,filteredExpenseData) {
         rawRows: []
       };
     }
-  
+
     months[key].total += Number(row.Total);
     const item = row.Item;
     const qty = Number(row["Qty."]);
     const dateFormatted = formatDate(row.Date);
-  
+
     months[key].items[item] = (months[key].items[item] || 0) + qty;
     months[key].days[dateFormatted] = (months[key].days[dateFormatted] || 0) + Number(row.Total);
     months[key].rawRows.push(row);
+  });
 
-   });
-
-   filteredExpenseData.forEach(row => {
+  // Group expenses by MonthYear
+  filteredExpenseData.forEach(row => {
     const date = new Date(row.Date);
     const key = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
     monthlyExpenses[key] = (monthlyExpenses[key] || 0) + parseFloat(row.Amount || 0);
   });
-  
+
   const tbody = document.getElementById("monthlyTableBody");
   tbody.innerHTML = '';
 
-  Object.entries(months).forEach(([monthYear, stats], index) => {
+  // 🧠 Convert months object to sorted array (descending by date)
+  const sortedEntries = Object.entries(months).sort(([a], [b]) => {
+    const dateA = new Date("1 " + a); // Convert "April 2025" → Date
+    const dateB = new Date("1 " + b);
+    return dateB - dateA; // Descending
+  });
+
+  sortedEntries.forEach(([monthYear, stats], index) => {
     const topItem = Object.entries(stats.items).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
     const leastItem = Object.entries(stats.items).filter(([_, qty]) => qty > 0).sort((a, b) => a[1] - b[1])[0]?.[0] || '-';
     const bestDay = Object.entries(stats.days).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
+
+    const salesTotal = stats.total;
+    const expenseTotal = monthlyExpenses[monthYear] || 0;
+    const profit = salesTotal - expenseTotal;
 
     // Weekly breakdown
     const weeklyMap = {};
@@ -582,20 +593,103 @@ function buildMonthlySummary(data,filteredExpenseData) {
       const daySales = weekStats.days;
       const best = Object.entries(daySales).sort((a, b) => b[1] - a[1])[0];
       const worst = Object.entries(daySales).sort((a, b) => a[1] - b[1])[0];
-      weeklyTrendHTML += `
-        <div><strong>Week of ${weekStart}:</strong> 🟢 Best: ${best?.[0]} (₹${best?.[1].toFixed(2)}), 🔴 Worst: ${worst?.[0]} (₹${worst?.[1].toFixed(2)})</div>
-      `;
+      const weekTotal = Object.values(daySales).reduce((sum, val) => sum + val, 0);
+const weekEnd = new Date(weekStart);
+weekEnd.setDate(weekEnd.getDate() + 6);
+
+// Map day indexes to short names (M, T, W...)
+const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+// Build day-wise values for the week
+let dailyTotals = [];
+let bestDayVal = -Infinity, worstDayVal = Infinity;
+let bestDayIdx = -1, worstDayIdx = -1;
+
+for (let i = 0; i < 7; i++) {
+  const date = new Date(weekStart);
+  date.setDate(date.getDate() + i);
+  const formatted = formatDate(date);
+  const val = daySales[formatted] || 0;
+
+  dailyTotals.push(val);
+
+  if (val > bestDayVal) {
+    bestDayVal = val;
+    bestDayIdx = i;
+  }
+  if (val < worstDayVal) {
+    worstDayVal = val;
+    worstDayIdx = i;
+  }
+}
+
+// Build HTML row
+let headerRow = '<tr>';
+let valueRow = '<tr>';
+
+for (let i = 0; i < 7; i++) {
+  headerRow += `<th class="text-center">${dayLabels[i]}</th>`;
+
+  const value = formatCurrency(dailyTotals[i]);
+  let className = 'bg-light';
+  if (i === bestDayIdx) className = 'bg-success text-white fw-bold';
+  else if (i === worstDayIdx) className = 'bg-danger text-white';
+
+  valueRow += `<td class="text-center ${className}">${value}</td>`;
+}
+
+headerRow += '</tr>';
+valueRow += '</tr>';
+
+
+weeklyTrendHTML += `
+  <div class="card shadow-sm mb-4 rounded-4">
+    <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
+      <span>🗓️ <strong>${formatDate(weekStart)} – ${formatDate(weekEnd)}</strong></span>
+      <span class="badge bg-dark">Total: ${formatCurrency(weekTotal)}</span>
+    </div>
+    <div class="card-body py-3 px-4">
+      <div class="d-flex justify-content-between mb-2 text-center text-muted fw-semibold" style="font-size: 0.85rem;">
+        ${dayLabels.map(label => `<div style="width: 14.28%;">${label}</div>`).join('')}
+      </div>
+      <div class="d-flex justify-content-between text-center">
+        ${dailyTotals.map((val, i) => {
+          const value = formatCurrency(val);
+          let bgClass = 'bg-light text-dark';
+          if (i === bestDayIdx) bgClass = 'bg-success text-white fw-bold shadow';
+          else if (i === worstDayIdx) bgClass = 'bg-danger text-white shadow-sm';
+
+          return `
+            <div style="width: 14.28%;">
+              <div class="rounded-pill px-2 py-1 ${bgClass}" style="display:inline-block; min-width:60px; font-size:0.85rem;">
+                ${value}
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+`;
+
+
+
     });
 
-    // Unique ID for collapse
     const collapseId = `collapseMonth${index}`;
 
+    // 🧱 Main row
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${monthYear}</td>
-      <td>${formatCurrency(stats.total)}</td>
+      <td>${formatCurrency(salesTotal)}</td>
       <td>${topItem}</td>
-      <td class="text-danger">${formatCurrency(monthlyExpenses[monthYear] || 0)}</td>
+      <td class="text-danger">${formatCurrency(expenseTotal)}</td>
+      <td>
+  <span class="badge ${profit > 0 ? 'bg-success' : profit < 0 ? 'bg-danger' : 'bg-secondary'}">
+    ${formatCurrency(profit)}
+  </span>
+</td>
+
       <td>
         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false">
           🔍 View
@@ -604,10 +698,10 @@ function buildMonthlySummary(data,filteredExpenseData) {
     `;
     tbody.appendChild(tr);
 
-    // Collapse row
+    // 🔽 Collapsible detail row
     const trCollapse = document.createElement('tr');
     trCollapse.innerHTML = `
-      <td colspan="4" class="p-0 border-0">
+      <td colspan="6" class="p-0 border-0">
         <div id="${collapseId}" class="collapse">
           <div class="p-3 bg-light">
             <p><strong>Top Item:</strong> ${topItem}</p>
@@ -622,6 +716,7 @@ function buildMonthlySummary(data,filteredExpenseData) {
     tbody.appendChild(trCollapse);
   });
 }
+
 
 
 function populateYearOptions(data) {
