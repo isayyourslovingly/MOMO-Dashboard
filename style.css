@@ -1,67 +1,205 @@
-body { 
+body {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: #fffdf5;
   font-family: 'Segoe UI', sans-serif;
+  color: #1a1a1a;
   transition: filter 0.3s ease;
 }
 
+/* Logo styling */
+.dashboard-logo {
+  height: 1.8em;
+  vertical-align: middle;
+  object-fit: contain;
+  margin-right: 0.5rem;
+}
+
+/* 🌟 Elegant Summary Cards */
 .summary-card {
-  background: white;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  padding: 1.2rem;
+  border-radius: 12px;
   text-align: center;
+  font-weight: 600;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease-in-out, background-color 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
 }
 
 .card-value {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #198754;
+  margin-top: 0.5rem;
+  display: block;
+  color: inherit;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.chart-container {
-  margin-top: 2rem;
+.card-value[data-target] {
+  transition: transform 0.5s ease;
+}
+
+.card-value.animating {
+  transform: scale(1.1);
+}
+
+/* 🌈 Golden Themed Summary Cards */
+.col-md-3:nth-child(1) .summary-card {
+  background-color: #fff7d6;
+  color: #c18f00;
+}
+
+.col-md-3:nth-child(2) .summary-card {
+  background-color: #fdf4e3;
+  color: #a87600;
+}
+
+.col-md-3:nth-child(3) .summary-card {
+  background-color: #fffbea;
+  color: #b89100;
+}
+
+.col-md-3:nth-child(4) .summary-card {
+  background-color: #fff2db;
+  color: #b25c00;
+}
+
+/* Global Filter Section */
+#globalFilters {
+  background: #fffbe6;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 #globalFilters label {
   font-weight: 500;
 }
 
-#globalFilters {
-  background: #fff;
+/* Chart styling */
+.chart-container {
+  margin-top: 2rem;
+}
+
+.chart-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.chart-box {
+  flex: 1 1 400px;
+  max-width: 500px;
+  height: 300px;
+  padding: 10px;
+  background-color: #fffef9;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.chart-box canvas {
+  flex: 1;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Tabs */
+#viewTabs .nav-link {
+  font-weight: 600;
+  color: #333;
+  border-radius: 6px;
+  margin-right: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#viewTabs .nav-link.active {
+  color: #fff !important;
+}
+
+#viewTabs .nav-link.active[href="#itemised"] {
+  background-color: #c18f00;
+}
+
+#viewTabs .nav-link.active[href="#weekly"] {
+  background-color: #a87600;
+}
+
+#viewTabs .nav-link.active[href="#monthly"] {
+  background-color: #b89100;
+}
+
+#viewTabs .nav-link.active[href="#inventory"] {
+  background-color: #b25c00;
+}
+
+#viewTabs .nav-link.active[href="#expenses"] {
+  background-color: #aa3f00;
+}
+
+/* Tab Content */
+.tab-content > .tab-pane.active {
+  background-color: #fffef9;
   padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: background-color 0.5s ease-in-out;
+}
+
+/* Table Styling */
+table {
+  background-color: #fff;
+  border-radius: 6px;
+}
+
+table thead {
+  background-color: #fff6cc;
+  color: #333;
+}
+
+table tbody tr {
+  background-color: #fffdf5;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #fdf7e4;
 }
 
 td:nth-child(2),
 td:nth-child(6),
 .summary-card .card-value {
   font-weight: 600;
-  color: #198754;
 }
 
-body.unauthenticated .container {
-  display: none;
-}
-
+/* Inventory & Low Stock */
 .low-stock {
-  background-color: #ffe5e5;
-  color: #c00;
+  background-color: #fff3cd;
+  color: #856404;
   font-weight: bold;
   border-radius: 4px;
   padding: 2px 6px;
 }
 
-/* Toggle switch colors */
+#lowStockItems {
+  color: #b25c00;
+  font-weight: 500;
+}
+
+/* Toggle Switches */
 .form-check-input:checked {
-  background-color: #dc3545; /* red for low stock view */
-  border-color: #dc3545;
+  background-color: #c18f00;
+  border-color: #c18f00;
 }
 
 .form-check-input {
-  background-color: #28a745; /* green when off */
-  border-color: #28a745;
+  background-color: #aaa;
+  border-color: #aaa;
 }
 
 /* Loading Spinner */
@@ -81,6 +219,7 @@ body.unauthenticated .container {
 .spinner-border {
   width: 3rem;
   height: 3rem;
+  color: #c18f00;
 }
 
 .blur {
@@ -88,141 +227,25 @@ body.unauthenticated .container {
   pointer-events: none;
 }
 
-#lowStockItems {
-  color: #d9534f;
-  font-weight: 500;
-}
-
-.chart-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.chart-box {
-  flex: 1 1 400px;
-  max-width: 500px;
-  height: 300px;
-  padding: 10px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-}
-
-.chart-box canvas {
-  flex: 1;
-  width: 100% !important;
-  height: 100% !important;
-  position: relative;
-}
-
-@media screen and (max-width: 480px) {
-  .chart-container {
-    max-width: 300px;
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+  .chart-row,
+  .chart-box {
+    display: none !important;
   }
-}
 
-/* ------------------- */
-/* ✅ Tabs + Color Coding */
-/* ------------------- */
+  .summary-card {
+    font-size: 0.95rem;
+    padding: 0.75rem;
+  }
 
-/* Tab nav styles */
-#viewTabs .nav-link {
-  font-weight: 600;
-  color: #333;
-  border-radius: 6px;
-  margin-right: 6px;
-}
+  .card-value {
+    font-size: 1.2rem;
+  }
 
-#viewTabs .nav-link.active[href="#itemised"] {
-  background-color: #0d6efd; /* Blue */
-  color: #fff;
-}
-
-#viewTabs .nav-link.active[href="#weekly"] {
-  background-color: #198754; /* Green */
-  color: #fff;
-}
-
-#viewTabs .nav-link.active[href="#monthly"] {
-  background-color: #fd7e14; /* Orange */
-  color: #fff;
-}
-
-#viewTabs .nav-link.active[href="#inventory"] {
-  background-color: #35dcb8; /* Red */
-  color: #fff;
-}
-
-#viewTabs .nav-link.active[href="#expenses"] {
-  background-color: #dc3545; /* Red */
-  color: #fff;
-}
-
-/* Tab backgrounds */
-.tab-content > .tab-pane#itemised.active {
-  background-color: #e7f1ff; /* Light blue background */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-.tab-content > .tab-pane#weekly.active {
-  background-color: #eaf7ef; /* Light green background */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-.tab-content > .tab-pane#monthly.active {
-  background-color: #fff4e6; /* Light orange background */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-.tab-content > .tab-pane#inventory.active {
-  background-color: #aaced4; /* Light red background */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-
-.tab-content > .tab-pane#expenses.active {
-  background-color: #ffe6e9; /* Light red background */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-/* Table row coloring per tab */
-#itemised table tbody tr {
-  background-color: #e3f0ff;
-}
-#weekly table tbody tr {
-  background-color: #e6f4ec;
-}
-#monthly table tbody tr {
-  background-color: #fff1dc;
-}
-#inventory table tbody tr {
-  background-color: #ffe2e5;
-}
-
-#itemised table tbody tr:nth-child(even),
-#weekly table tbody tr:nth-child(even),
-#monthly table tbody tr:nth-child(even),
-#inventory table tbody tr:nth-child(even) {
-  background-color: inherit !important;
-}
-
-/* Override Bootstrap's .table-striped */
-#itemised table.table-striped tbody tr:nth-of-type(odd),
-#weekly table.table-striped tbody tr:nth-of-type(odd),
-#monthly table.table-striped tbody tr:nth-of-type(odd),
-#inventoryTableBody table.table-striped tbody tr:nth-of-type(odd) {
-  background-color: inherit !important;
+  h1 {
+    font-size: 1.5rem;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -230,81 +253,16 @@ body.unauthenticated .container {
     font-size: 14px;
   }
 
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.25rem;
-  }
-
-  h3 {
-    font-size: 1.1rem;
-  }
-
-  h4 {
+  h1, h2, h3 {
     font-size: 1rem;
   }
 
-  .summary-card {
-    padding: 0.75rem;
-    font-size: 0.95rem;
-  }
-
-  .card-value {
-    font-size: 1.2rem;
-  }
-
-  #globalFilters {
-    padding: 0.75rem;
-    font-size: 0.95rem;
-  }
-
-  #globalFilters label {
-    font-size: 0.9rem;
-  }
-
-  table,
-  th,
-  td {
-    font-size: 0.9rem;
-  }
-
-  .form-check-input,
-  .form-check-label {
-    font-size: 0.9rem;
-  }
-
-  #lowStockItems {
-    font-size: 0.95rem;
-  }
-
   .nav-link {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     padding: 0.4rem 0.6rem;
   }
 
   .tab-content {
     font-size: 0.95rem;
   }
-}
-
-@media screen and (max-width: 768px) {
-  .chart-row,
-  .chart-box {
-    display: none !important;
-  }
-}
-
-#expenses.tab-pane.active {
-  background-color: #fceeee; /* Light red-pink */
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-#expenses table tbody tr {
-  background-color: #fdeaea;
-}
-#expenses table tbody tr:nth-child(even) {
-  background-color: #ffffff;
 }

@@ -854,10 +854,17 @@ function buildWeeklyDonutChart(data) {
         label: 'Weekly Sales',
         data: values,
         backgroundColor: [
-          '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e',
-          '#e74a3b', '#858796', '#20c9a6', '#5a5c69'
+          '#FFD700', // Gold
+          '#FFF8DC', // Cornsilk (creamy)
+          '#FFA500', // Orange
+          '#F5DEB3', // Wheat
+          '#D4AF37', // Rich gold
+          '#B8860B', // Dark goldenrod
+          '#000000', // Black
+          '#FFFFFF'  // White
         ],
-        borderWidth: 1
+        borderColor: '#fff',
+        borderWidth: 2
       }]
     },
     options: {
@@ -865,6 +872,11 @@ function buildWeeklyDonutChart(data) {
       maintainAspectRatio: false,
       plugins: {
         tooltip: {
+          backgroundColor: '#fff8dc',
+          titleColor: '#000',
+          bodyColor: '#333',
+          borderColor: '#FFD700',
+          borderWidth: 1,
           callbacks: {
             label: (tooltipItem) => {
               const value = tooltipItem.raw;
@@ -873,12 +885,19 @@ function buildWeeklyDonutChart(data) {
           }
         },
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          labels: {
+            color: '#333',
+            font: {
+              weight: '600'
+            }
+          }
         }
-      }
+      },
+      cutout: '65%' // Inner radius for elegance
     }
-    
   });
+  
 }
 
 
@@ -909,8 +928,11 @@ function buildMonthlyBarChart(data) {
       datasets: [{
         label: 'Monthly Sales',
         data: values,
-        backgroundColor: '#4e73df',
-        borderRadius: 4,
+        backgroundColor: '#FFD700',     // Gold
+        borderColor: '#B8860B',         // Dark golden border
+        borderWidth: 1,
+        borderRadius: 6,
+        hoverBackgroundColor: '#FFC300' // Goldenrod hover
       }]
     },
     options: {
@@ -920,14 +942,31 @@ function buildMonthlyBarChart(data) {
         y: {
           beginAtZero: true,
           ticks: {
+            color: '#333', // Dark gray for visibility
             callback: function (value) {
               return `₹${value.toFixed(2)}`;
             }
+          },
+          grid: {
+            color: 'rgba(0,0,0,0.05)' // Subtle grid
+          }
+        },
+        x: {
+          ticks: {
+            color: '#333'
+          },
+          grid: {
+            color: 'rgba(0,0,0,0.03)'
           }
         }
       },
       plugins: {
         tooltip: {
+          backgroundColor: '#fff8dc', // Light creamy gold
+          titleColor: '#000',
+          bodyColor: '#333',
+          borderColor: '#FFD700',
+          borderWidth: 1,
           callbacks: {
             label: (context) => `₹${context.raw.toFixed(2)}`
           }
@@ -938,8 +977,22 @@ function buildMonthlyBarChart(data) {
       }
     }
   });
+  
 }
 
+
+function animateValue(element, start, end, duration) {
+  let startTime = null;
+  const step = (currentTime) => {
+    if (!startTime) startTime = currentTime;
+    const progress = currentTime - startTime;
+    const percent = Math.min(progress / duration, 1);
+    const value = Math.floor(percent * (end - start) + start);
+    element.textContent = element.dataset.prefix + value.toLocaleString();
+    if (percent < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 
 
 
@@ -970,4 +1023,13 @@ document.getElementById("lowStockSwitch").addEventListener("change", (e) => {
 document.addEventListener('DOMContentLoaded', function() {
   fetchSaleItemsData();
   fetchExpensesData();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.card-value').forEach((el) => {
+    const end = parseInt(el.dataset.value || "0", 10);
+    const prefix = el.dataset.prefix || "";
+    el.dataset.prefix = prefix;
+    animateValue(el, 0, end, 1500);
+  });
 });
