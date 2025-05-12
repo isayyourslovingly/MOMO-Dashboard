@@ -1,1184 +1,747 @@
-const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec'; // Replace this with your actual Apps Script URL
+const baseURL = 'https://script.google.com/macros/s/AKfycbwn1qpD0eURPkQFqyfeROmR5MWldm9I09VkKNHZz36w-nBVkqoaRt7qq0PqcD-Ws4QAzw/exec'; // Replace with your actual script ID
 
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function formatCurrency(value) {
-  return `₹${Number(value).toFixed(2)}`;
-}
-
-
-/*
-// MOCK DATA (replace fetch with this)
-const rawData = [
-  {
-    Date: "2025-03-25",
-    Item: "Classic Veg Momos",
-    Code: "[New] 1",
-    "Qty.": 2,
-    Total: 158,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-25",
-    Item: "Chicken Schezwan Momos",
-    Code: "[New] 6",
-    "Qty.": 1,
-    Total: 109,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-26",
-    Item: "Water Bottle 1ltr",
-    Code: "water bottle 1ltr",
-    "Qty.": 3,
-    Total: 60,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-26",
-    Item: "French Fries",
-    Code: "[New] 66",
-    "Qty.": 2,
-    Total: 198,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-04-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-05-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-06-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-05-27",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-04-02",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-31",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-30",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  {
-    Date: "2025-03-28",
-    Item: "Paneer Mo-Burger",
-    Code: "[New] 70",
-    "Qty.": 1,
-    Total: 99,
-    MonthYear: "March-2025"
-  },
-  // 👉 Add ~25 more rows by duplicating and adjusting dates/items
-];
-
-let filteredData = rawData;
-
-const now = new Date();
-let selectedYear = now.getFullYear().toString();
-let selectedMonth = String(now.getMonth() + 1).padStart(2, '0'); // '01'-'12'
-
-
-// Call render manually since no fetch
-populateYearOptions(rawData);
-applyFilters();
-
-
-*/
-
-
-let rawData = [];
-let ExpenseData = [];
+let combinedSalesData = [];
 let filteredData = [];
-let showingLowStock = false;
-let weeklyDonutChartInstance;
-let monthlyBarChartInstance;
 
-
-
-
-const now = new Date();
-let selectedYear = now.getFullYear().toString();
-let selectedMonth = String(now.getMonth() + 1).padStart(2, '0'); // '01'-'12'
-
-/*
-function initDashboard() {
-fetch(apiUrl)
-  .then(res => res.json())
-  .then(data => {
-    rawData = data;
-    populateYearOptions(data); // 👈 add this
-    applyFilters(); // 👈 filtered first render
-  });
-  ;
-}*/
-
-function fetchSaleItemsData() {
-  showLoading(true); 
-fetch(`${apiUrl}?action=getSaleItems`)
-  .then(res => res.json())
-  .then(data => {
-    rawData = data;
-    console.log(data);
-    populateYearOptions(data); // 👈 add this
-    applyFilters();
-    showLoading(false); // 👈 filtered first render
-  })
-  .catch(err => {
-    console.error("Error fetching sale items data:", err);
-    showLoading(false); // Hide loading spinner in case of error
-  });
-  
-}
-  function buildTable(data) {
-    const table = document.querySelector('#salesTable');
-    const thead = table.querySelector('thead');
-    const tbody = table.querySelector('tbody');
-    thead.innerHTML = `
-      <tr>
-        <th>Date</th>
-        <th>Total Qty.</th>
-        <th>Subtotal</th>
-        <th>Top Item</th>
-        <th></th>
-      </tr>
-    `;
-    tbody.innerHTML = '';
-  
-    // Group data by Date
-    const grouped = {};
-    data.forEach(row => {
-      const date = formatDate(row.Date);
-      if (!grouped[date]) grouped[date] = [];
-      grouped[date].push(row);
-    });
-  
-    Object.entries(grouped).forEach(([date, items], index) => {
-      const collapseId = `collapse-${index}`;
-      const totalQty = items.reduce((sum, i) => sum + Number(i["Qty."]), 0);
-      const subtotal = items.reduce((sum, i) => sum + Number(i.Total), 0);
-      const topItem = Object.entries(items.reduce((acc, i) => {
-        acc[i.Item] = (acc[i.Item] || 0) + Number(i["Qty."]);
-        return acc;
-      }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-  
-      // Main row (summary)
-      const summaryRow = document.createElement('tr');
-      summaryRow.innerHTML = `
-        <td>${date}</td>
-        <td>${totalQty}</td>
-        <td>${formatCurrency(subtotal)}</td>
-        <td>${topItem}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary" 
-                  data-bs-toggle="collapse" 
-                  data-bs-target="#${collapseId}">
-            View
-          </button>
-        </td>
-      `;
-      tbody.appendChild(summaryRow);
-  
-      // Expandable detail row
-      const detailsRow = document.createElement('tr');
-      detailsRow.innerHTML = `
-        <td colspan="5" class="p-0 border-0">
-          <div class="collapse" id="${collapseId}">
-            <div class="p-2">
-              <table class="table table-sm mb-0 table-bordered">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Code</th>
-                    <th>Qty.</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${items.map(item => `
-                    <tr>
-                      <td>${item.Item}</td>
-                      <td>${item.Code}</td>
-                      <td>${item["Qty."]}</td>
-                      <td>${formatCurrency(item.Total)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(detailsRow);
-    });
-  
-    // Search filter still applies
-    document.querySelector('#searchInput').addEventListener('input', e => {
-      const term = e.target.value.toLowerCase();
-      tbody.querySelectorAll('tr').forEach(tr => {
-        tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
-      });
-    });
-  }
- 
-  
-
-function buildSummary(data) {
-  let totalSales = 0;
-  let totalQty = 0;
-  const itemCount = {};
-
-  data.forEach(row => {
-    totalSales += Number(row.Total);
-    totalQty += parseInt(row["Qty."]);
-    itemCount[row.Item] = (itemCount[row.Item] || 0) + parseInt(row["Qty."]);
-  });
-
-  const topItem = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
-
-  document.getElementById("totalSales").textContent = formatCurrency(totalSales);
-  document.getElementById("totalQty").textContent = totalQty.toLocaleString();
-  document.getElementById("topItem").textContent = topItem;
-}
-
-function buildWeeklyTable(data,filteredExpenseData) {
-  const weeks = {};
-
-  data.forEach(row => {
-    const dateObj = new Date(row.Date);
-    const day = dateObj.getDay();
-    const weekStart = new Date(dateObj);
-    weekStart.setDate(dateObj.getDate() - day);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-
-    const weekKey = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
-    if (!weeks[weekKey]) {
-      weeks[weekKey] = {
-        total: 0,
-        items: {},
-        days: {},
-        expenses: 0
-      };
-    }
-
-    weeks[weekKey].total += Number(row.Total);
-    const item = row.Item;
-    const qty = Number(row["Qty."]);
-    const date = formatDate(row.Date);
-
-    weeks[weekKey].items[item] = (weeks[weekKey].items[item] || 0) + qty;
-    weeks[weekKey].days[date] = (weeks[weekKey].days[date] || 0) + Number(row.Total);
-  });
-
-  // 👇 Add expense aggregation
-filteredExpenseData.forEach(row => {
-  console.log(row);
-  const dateObj = new Date(row.Date);
-  const day = dateObj.getDay();
-  const weekStart = new Date(dateObj);
-  weekStart.setDate(dateObj.getDate() - day);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-
-  const weekKey = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
-  if (!weeks[weekKey]) {
-    weeks[weekKey] = {
-      total: 0,
-      items: {},
-      days: {},
-      expenses: 0 // 👈 Add this
-    };
-  }
-
-  weeks[weekKey].expenses += parseFloat(row.Amount || 0); // 👈 Track expenses
-  console.log(weeks);
-  console.log(weekKey);
-  console.log(weeks[weekKey].expenses);
+document.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
+  fetchCombinedSalesData(); // Initial load with current year
 });
 
+function setupEventListeners() {
+  document.getElementById('yearSelect').addEventListener('change', applyFilters);
+  document.getElementById('monthSelect').addEventListener('change', applyFilters);
+  document.getElementById('datePicker').addEventListener('change', applyFilters);
 
-
-  const tbody = document.getElementById("weeklyTableBody");
-  tbody.innerHTML = '';
-
-  Object.entries(weeks).forEach(([weekRange, stats]) => {
-    const tr = document.createElement("tr");
-
-    const topItem = Object.entries(stats.items).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-    const leastItem = Object.entries(stats.items).filter(([_, qty]) => qty > 0).sort((a, b) => a[1] - b[1])[0]?.[0] || '-';
-    const bestDay = Object.entries(stats.days).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
-
-    tr.innerHTML = `
-      <td>${weekRange}</td>
-      <td>${formatCurrency(stats.total)}</td>
-      <td>${topItem}</td>
-      <td>${leastItem}</td>
-      <td>${bestDay[0]}</td>
-      <td>${formatCurrency(bestDay[1])}</td>
-      <td class="text-danger">${formatCurrency(stats.expenses || 0)}</td>
-    `;
-
-    tbody.appendChild(tr);
+  document.getElementById('tab-daily').addEventListener('click', () => renderTab('daily'));
+  document.getElementById('tab-week').addEventListener('click', () => renderTab('week'));
+  document.getElementById('tab-month').addEventListener('click', () => renderTab('month'));
+  document.getElementById('tab-expenses').addEventListener('click', () => renderTab('expenses'));
+  document.getElementById('tab-inventory').addEventListener('click', () => fetchAndRender('getInventory'));
+  document.getElementById('homeBtn').addEventListener('click', () => {
+    document.getElementById('content').scrollTo({ top: 0, behavior: 'smooth' });
   });
-
-
-
-
-
+  
+  
 }
 
-function buildCharts(data) {
-  const monthly = {};
+// === Data Fetching ===
+function fetchCombinedSalesData(params = {}) {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex'; // Show loader
+  
+    let query = new URLSearchParams({ action: 'getCombinedSales', ...params }).toString();
+    fetch(`${baseURL}?${query}`)
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === 'success' && Array.isArray(response.data)) {
+          combinedSalesData = response.data;
+          filteredData = [...combinedSalesData];
+          console.log(filteredData);
+          populateFilterOptions();
+          renderTab('daily');
+        } else {
+          console.error("Error fetching combined sales:", response);
+        }
+      })
+      .catch(err => console.error("Fetch error:", err))
+      .finally(() => {
+        loader.style.display = 'none'; // Hide loader
+      });
+  }
+  
 
-  data.forEach(row => {
-    const monthYear = row.MonthYear;
-    monthly[monthYear] = (monthly[monthYear] || 0) + Number(row.Total);
-  });
-
-  const ctx = document.getElementById('monthlyChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: Object.keys(monthly),
-      datasets: [{
-        label: 'Monthly Sales',
-        data: Object.values(monthly),
-        fill: false,
-        borderColor: '#4e73df',
-        tension: 0.3
-      }]
-    }
-  });
-}
-
-function buildInsights(data) {
-  const totalsByDate = {};
-  const itemCount = {};
-
-  data.forEach(row => {
-    const date = formatDate(row.Date);
-    totalsByDate[date] = (totalsByDate[date] || 0) + Number(row.Total);
-    itemCount[row.Item] = (itemCount[row.Item] || 0) + Number(row["Qty."]);
-  });
-
-  const bestDay = Object.entries(totalsByDate).sort((a, b) => b[1] - a[1])[0];
-  const topItem = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0];
-
-  document.getElementById("bestDay").textContent = bestDay?.[0] || '-';
-  document.getElementById("insightTopItem").textContent = topItem?.[0] || '-';
-
-  const now = new Date();
-  const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay());
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-
-  const recentTotal = data
-    .filter(row => {
-      const date = new Date(row.Date);
-      return date >= start && date <= end;
-    })
-    .reduce((sum, [, , , , total]) => sum + Number(total), 0);
-
-  document.getElementById("weekTotal").textContent = formatCurrency(recentTotal);
-
-  // 🔽 Fetch inventory and find top 5 low stock items
-  fetch(apiUrl + '?action=getInventory')
+function fetchAndRender(action) {
+  fetch(`${baseURL}?action=${action}`)
     .then(res => res.json())
-    .then(inventoryData => {
-      console.log(inventoryData);
-      const lowStockItems = inventoryData
-        .filter(item => Number(item.CurrentStock) < Number(item.ReorderLevel))
-        .sort((a, b) => Number(a.CurrentStock) - Number(b.CurrentStock))
-        .slice(0, 5)
-        .map(item => `${item.ItemName} : ${item.CurrentStock}`);
-
-      document.getElementById("lowStockItems").textContent = lowStockItems.join(", ") || 'All good!';
-    })
-    .catch(err => {
-      console.error("Error fetching inventory for insights:", err);
-      document.getElementById("lowStockItems").textContent = 'Unable to fetch';
-    });
-
-}
-
-function buildMonthlySummary(data, filteredExpenseData) {
-  const months = {};
-  const monthlyExpenses = {};
-
-  // Group sales data by MonthYear
-  data.forEach(row => {
-    const date = new Date(row.Date);
-    const key = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-
-    if (!months[key]) {
-      months[key] = {
-        total: 0,
-        items: {},
-        days: {},
-        rawRows: []
-      };
-    }
-
-    months[key].total += Number(row.Total);
-    const item = row.Item;
-    const qty = Number(row["Qty."]);
-    const dateFormatted = formatDate(row.Date);
-
-    months[key].items[item] = (months[key].items[item] || 0) + qty;
-    months[key].days[dateFormatted] = (months[key].days[dateFormatted] || 0) + Number(row.Total);
-    months[key].rawRows.push(row);
-  });
-
-  // Group expenses by MonthYear
-  filteredExpenseData.forEach(row => {
-    const date = new Date(row.Date);
-    const key = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-    monthlyExpenses[key] = (monthlyExpenses[key] || 0) + parseFloat(row.Amount || 0);
-  });
-
-  const tbody = document.getElementById("monthlyTableBody");
-  tbody.innerHTML = '';
-
-  // 🧠 Convert months object to sorted array (descending by date)
-  const sortedEntries = Object.entries(months).sort(([a], [b]) => {
-    const dateA = new Date("1 " + a); // Convert "April 2025" → Date
-    const dateB = new Date("1 " + b);
-    return dateB - dateA; // Descending
-  });
-
-  sortedEntries.forEach(([monthYear, stats], index) => {
-    const topItem = Object.entries(stats.items).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-    const leastItem = Object.entries(stats.items).filter(([_, qty]) => qty > 0).sort((a, b) => a[1] - b[1])[0]?.[0] || '-';
-    const bestDay = Object.entries(stats.days).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
-
-    const salesTotal = stats.total;
-    const expenseTotal = monthlyExpenses[monthYear] || 0;
-    const profit = salesTotal - expenseTotal;
-
-    // Weekly breakdown
-    const weeklyMap = {};
-    stats.rawRows.forEach(row => {
-      const dateObj = new Date(row.Date);
-      const weekStart = new Date(dateObj);
-      weekStart.setDate(dateObj.getDate() - dateObj.getDay());
-      const weekKey = formatDate(weekStart);
-
-      if (!weeklyMap[weekKey]) {
-        weeklyMap[weekKey] = { days: {} };
+    .then(response => {
+      if (response.status === 'success') {
+        renderGenericTable(response, action);
+        console.log(JSON.stringify(response));
+      } else {
+        renderError(response.data.message || "No data found.");
       }
-
-      const formatted = formatDate(row.Date);
-      weeklyMap[weekKey].days[formatted] = (weeklyMap[weekKey].days[formatted] || 0) + Number(row.Total);
-    });
-
-    let weeklyTrendHTML = '';
-    Object.entries(weeklyMap).forEach(([weekStart, weekStats]) => {
-      const daySales = weekStats.days;
-      const best = Object.entries(daySales).sort((a, b) => b[1] - a[1])[0];
-      const worst = Object.entries(daySales).sort((a, b) => a[1] - b[1])[0];
-      const weekTotal = Object.values(daySales).reduce((sum, val) => sum + val, 0);
-const weekEnd = new Date(weekStart);
-weekEnd.setDate(weekEnd.getDate() + 6);
-
-// Map day indexes to short names (M, T, W...)
-const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-// Build day-wise values for the week
-let dailyTotals = [];
-let bestDayVal = -Infinity, worstDayVal = Infinity;
-let bestDayIdx = -1, worstDayIdx = -1;
-
-for (let i = 0; i < 7; i++) {
-  const date = new Date(weekStart);
-  date.setDate(date.getDate() + i);
-  const formatted = formatDate(date);
-  const val = daySales[formatted] || 0;
-
-  dailyTotals.push(val);
-
-  if (val > bestDayVal) {
-    bestDayVal = val;
-    bestDayIdx = i;
-  }
-  if (val < worstDayVal) {
-    worstDayVal = val;
-    worstDayIdx = i;
-  }
+    })
+    .catch(err => renderError(err));
 }
 
-// Build HTML row
-let headerRow = '<tr>';
-let valueRow = '<tr>';
+// === Filters ===
 
-for (let i = 0; i < 7; i++) {
-  headerRow += `<th class="text-center">${dayLabels[i]}</th>`;
+function populateFilterOptions() {
+  const years = new Set();
+  const months = new Set();
 
-  const value = formatCurrency(dailyTotals[i]);
-  let className = 'bg-light';
-  if (i === bestDayIdx) className = 'bg-success text-white fw-bold';
-  else if (i === worstDayIdx) className = 'bg-danger text-white';
+  combinedSalesData.forEach(item => {
+    const [year, month] = item.Date.split('T')[0].split('-');
+    years.add(year);
+    months.add(month);
+  });
 
-  valueRow += `<td class="text-center ${className}">${value}</td>`;
+  populateDropdown('yearSelect', [...years]);
+  populateDropdown('monthSelect', [...months]);
 }
 
-headerRow += '</tr>';
-valueRow += '</tr>';
-
-
-weeklyTrendHTML += `
-  <div class="card shadow-sm mb-4 rounded-4">
-    <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
-      <span>🗓️ <strong>${formatDate(weekStart)} – ${formatDate(weekEnd)}</strong></span>
-      <span class="badge bg-dark">Total: ${formatCurrency(weekTotal)}</span>
-    </div>
-    <div class="card-body py-3 px-4">
-      <div class="d-flex justify-content-between mb-2 text-center text-muted fw-semibold" style="font-size: 0.85rem;">
-        ${dayLabels.map(label => `<div style="width: 14.28%;">${label}</div>`).join('')}
-      </div>
-      <div class="d-flex justify-content-between text-center">
-        ${dailyTotals.map((val, i) => {
-          const value = formatCurrency(val);
-          let bgClass = 'bg-light text-dark';
-          if (i === bestDayIdx) bgClass = 'bg-success text-white fw-bold shadow';
-          else if (i === worstDayIdx) bgClass = 'bg-danger text-white shadow-sm';
-
-          return `
-            <div style="width: 14.28%;">
-              <div class="rounded-pill px-2 py-1 ${bgClass}" style="display:inline-block; min-width:60px; font-size:0.85rem;">
-                ${value}
-              </div>
-            </div>`;
-        }).join('')}
-      </div>
-    </div>
-  </div>
-`;
-
-
-
-    });
-
-    const collapseId = `collapseMonth${index}`;
-
-    // 🧱 Main row
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${monthYear}</td>
-      <td>${formatCurrency(salesTotal)}</td>
-      <td>${topItem}</td>
-      <td class="text-danger">${formatCurrency(expenseTotal)}</td>
-      <td>
-  <span class="badge ${profit > 0 ? 'bg-success' : profit < 0 ? 'bg-danger' : 'bg-secondary'}">
-    ${formatCurrency(profit)}
-  </span>
-</td>
-
-      <td>
-        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false">
-          🔍 View
-        </button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-
-    // 🔽 Collapsible detail row
-    const trCollapse = document.createElement('tr');
-    trCollapse.innerHTML = `
-      <td colspan="6" class="p-0 border-0">
-        <div id="${collapseId}" class="collapse">
-          <div class="p-3 bg-light">
-            <p><strong>Top Item:</strong> ${topItem}</p>
-            <p><strong>Least Item:</strong> ${leastItem}</p>
-            <p><strong>Best Day:</strong> ${bestDay[0]} (${formatCurrency(bestDay[1])})</p>
-            <p><strong>Weekly Trends:</strong></p>
-            ${weeklyTrendHTML}
-          </div>
-        </div>
-      </td>
-    `;
-    tbody.appendChild(trCollapse);
+function populateDropdown(id, options) {
+  const select = document.getElementById(id);
+  select.innerHTML = `<option value="">All</option>`;
+  options.sort().forEach(opt => {
+    const el = document.createElement('option');
+    el.value = opt;
+    el.textContent = opt;
+    select.appendChild(el);
   });
-}
-
-
-
-function populateYearOptions(data) {
-  const yearSet = new Set();
-
-  data.forEach(row => {
-    let dateStr = row.Date;
-
-    // Try to parse reliably even if it's in "DD-MM-YYYY"
-    let dateParts = dateStr.split(/[-/]/);
-    let year;
-
-    if (dateParts[2]?.length === 4) {
-      // assume DD-MM-YYYY or DD/MM/YYYY
-      year = dateParts[2];
-    } else {
-      // fallback if it's ISO or Date object
-      year = new Date(dateStr).getFullYear();
-    }
-
-    if (!isNaN(year)) {
-      yearSet.add(year);
-    }
-  });
-
-  const yearSelect = document.getElementById("yearSelect");
-  yearSelect.innerHTML = `<option value="">All</option>`;
-
-  [...yearSet].sort((a, b) => b - a).forEach(year => {
-    const option = document.createElement("option");
-    option.value = year;
-    option.textContent = year;
-    yearSelect.appendChild(option);
-  });
-
-    // 👇 Select current year by default
-    yearSelect.value = selectedYear;
 }
 
 function applyFilters() {
-  filteredData = rawData.filter(row => {
-    const dateObj = new Date(row.Date);
-    const y = dateObj.getFullYear().toString();
-    const m = ("0" + (dateObj.getMonth() + 1)).slice(-2); // '01'-'12'
+  const year = document.getElementById('yearSelect').value;
+  const month = document.getElementById('monthSelect').value;
+  const exactDate = document.getElementById('datePicker').value;
+  console.log(combinedSalesData);
+  filteredData = combinedSalesData.filter(item => {
+    const [itemYear, itemMonth, itemDay] = item.Date.split('T')[0].split('-');
 
-    return (!selectedYear || y === selectedYear) &&
-           (!selectedMonth || m === selectedMonth);
+    if (exactDate) {
+      return item.Date.startsWith(exactDate);
+    }
+    if (year && itemYear !== year) return false;
+    if (month && itemMonth !== month) return false;
+
+    return true;
   });
-  filteredExpenseData = ExpenseData.filter(row => {
-    const dateObj = new Date(row.Date);
-    const y = dateObj.getFullYear().toString();
-    const m = ("0" + (dateObj.getMonth() + 1)).slice(-2); // '01'-'12'
 
-    return (!selectedYear || y === selectedYear) &&
-           (!selectedMonth || m === selectedMonth);
-  });
-  // rebuild all views
-  buildTable(filteredData);
-  buildSummary(filteredData);
-  buildWeeklyTable(filteredData,filteredExpenseData);
-  // buildCharts(filteredData);
-  buildMonthlySummary(filteredData,filteredExpenseData); 
-  fetchInventoryData();
-  // fetchExpensesData(filteredData);
-  buildInsights(filteredData);
-  buildWeeklyDonutChart(filteredData); 
-  buildMonthlyBarChart(filteredData);
-  populateExpensesTable(filteredExpenseData);
-  calculateExpensesSummary(filteredExpenseData);
-
+  renderTab(getActiveTab());
 }
 
-function handleCredentialResponse(response) {
-  const userData = parseJwt(response.credential);
-  const allowedEmails = ["isayyourslovingly@gmail.com", "someoneelse@domain.com"];
+// === Tab Rendering ===
 
-  if (allowedEmails.includes(userData.email)) {
-    document.body.classList.remove("unauthenticated");
-    initDashboard(); // your normal loading logic
-  } else {
-    alert("Access denied. Not an authorized user.");
+function renderTab(view) {
+  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`tab-${view}`).classList.add('active');
+
+  switch (view) {
+    case 'daily':
+      renderDailyView();
+      break;
+    case 'week':
+      renderWeeklyView();
+      break;
+    case 'month':
+        renderMonthlyView();
+        break;
+    case 'expenses':
+        renderExpenses();
+      break;
   }
 }
 
-// Helper to decode JWT token
-function parseJwt(token) {
-  const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-  const json = decodeURIComponent(atob(base64).split('').map(function(c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-  return JSON.parse(json);
+function getActiveTab() {
+  const active = document.querySelector('.tab-button.active');
+  return active ? active.dataset.tab : 'daily';
 }
 
-function buildInventoryTable(data) {
-  const tbody = document.getElementById("inventoryTableBody");
-  tbody.innerHTML = '';
+// === Expenses Rendering ===
+function renderExpenses() {
+    if (filteredData.length === 0) {
+        return renderError("No matching sales data.");
+    }
 
-  // Filter if toggle is active
-  const filtered = showingLowStock
-    ? data.filter(row => Number(row.CurrentStock) < Number(row.ReorderLevel))
-    : data;
+    const content = document.getElementById('content');
+    let groupedExpenses = {};
 
-  // Sort by lowest stock
-  filtered
-    .sort((a, b) => a.CurrentStock - b.CurrentStock)
-    .forEach(row => {
-      const tr = document.createElement("tr");
+    // Group expenses by Month-Year and then by Category
+    filteredData.forEach(day => {
+        day.ExpensesData.forEach(expense => {
+            const date = new Date(expense.Date);
+            const monthYear = date.toLocaleString('default', { month: 'long' }) + '-' + date.getFullYear(); // e.g., "April-2025"
+            const category = expense.Category;
 
-      for (let key in row) {
-        const td = document.createElement("td");
-        td.textContent = row[key];
-        
+            // Group by Month-Year
+            if (!groupedExpenses[monthYear]) {
+                groupedExpenses[monthYear] = {};
+            }
 
-        // Highlight low stock
-        if (key === "CurrentStock" && Number(row.CurrentStock) < Number(row.ReorderLevel)) {
-          td.classList.add("text-danger", "fw-bold");
+            // Group by Category within each Month-Year
+            if (!groupedExpenses[monthYear][category]) {
+                groupedExpenses[monthYear][category] = [];
+            }
+
+            groupedExpenses[monthYear][category].push(expense);
+        });
+    });
+
+    // Build HTML for grouped expenses
+    let html = '';
+    for (let monthYear in groupedExpenses) {
+        const monthCategories = groupedExpenses[monthYear];
+
+        // Calculate total for the month
+        const totalForMonth = Object.values(monthCategories).flat().reduce((total, expense) => total + expense.Amount, 0);
+
+        // Start the group (Month-Year) section
+        html += `
+            <div class="expense-group">
+                <div class="group-header">
+                    <span class="month-year">${monthYear}</span>
+                    <span class="total">Total: ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalForMonth)}</span>
+                    <button class="expander" onclick="toggleCategoryGroup('${monthYear}')">+</button>
+                </div>
+                <div id="category-details-${monthYear}" class="category-details" style="display: none;">
+        `;
+
+        // Loop through categories and create category sections
+        for (let category in monthCategories) {
+            const categoryExpenses = monthCategories[category];
+
+            // Calculate total for the category
+            const totalForCategory = categoryExpenses.reduce((total, expense) => total + expense.Amount, 0);
+
+            // Add category section
+            html += `
+                <div class="category-group">
+                    <div class="category-header">
+                        <span class="category-name">${category}</span>
+                        <span class="category-total">Total: ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalForCategory)}</span>
+                        <button class="expander" onclick="toggleExpenseDetails('${monthYear}', '${category}')">+</button>
+                    </div>
+                    <div id="expense-details-${monthYear}-${category}" class="expense-details" style="display: none;">
+                        <table>
+                            <thead>
+                                <tr><th>Date</th><th>Description</th><th>Amount</th></tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            // Add each individual expense under the category
+            categoryExpenses.forEach(expense => {
+                const formattedDate = new Date(expense.Date).toLocaleDateString('en-IN');
+                html += `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td>${expense.Description}</td>
+                        <td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(expense.Amount)}</td>
+                    </tr>
+                `;
+            });
+
+            // Close category section
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
         }
-        if (key === "Last Updated") {
-          
-          td.textContent = formatDate(row[key]);
+
+        // Close the group (Month-Year) section
+        html += `
+                </div>
+            </div>
+        `;
+    }
+
+    // Render the grouped expenses HTML
+    content.innerHTML = html;
+}
+
+// Function to toggle the display of categories under each month
+function toggleCategoryGroup(monthYear) {
+    const categoryDiv = document.getElementById(`category-details-${monthYear}`);
+    const expanderButton = document.querySelector(`button[onclick="toggleCategoryGroup('${monthYear}')"]`);
+
+    // Toggle the display
+    if (categoryDiv.style.display === 'none') {
+        categoryDiv.style.display = 'block';
+        expanderButton.textContent = '-'; // Change button to collapse
+    } else {
+        categoryDiv.style.display = 'none';
+        expanderButton.textContent = '+'; // Change button to expand
+    }
+}
+
+// Function to toggle the display of expenses under each category
+function toggleExpenseDetails(monthYear, category) {
+    const detailsDiv = document.getElementById(`expense-details-${monthYear}-${category}`);
+    const expanderButton = document.querySelector(`button[onclick="toggleExpenseDetails('${monthYear}', '${category}')"]`);
+
+    // Toggle the display
+    if (detailsDiv.style.display === 'none') {
+        detailsDiv.style.display = 'block';
+        expanderButton.textContent = '-'; // Change button to collapse
+    } else {
+        detailsDiv.style.display = 'none';
+        expanderButton.textContent = '+'; // Change button to expand
+    }
+}
+
+// === Monthly Rendering ===
+
+function renderMonthlyView() {
+    if (filteredData.length === 0) {
+        return renderError("No matching sales data.");
+    }
+
+    const processedData = processData(filteredData);
+    createTable(processedData);
+}
+
+function processData(data) {
+    const monthMap = {};
+
+    data.forEach(entry => {
+        const monthYear = new Date(entry.Date).toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        if (!monthMap[monthYear]) {
+            monthMap[monthYear] = {
+                monthYear,
+                totalSales: 0,
+                totalExpenses: 0,
+                sales: [],
+                itemsMap: {},
+                expensesMap: {},
+            };
         }
-        
+
+        const monthEntry = monthMap[monthYear];
+        const dailySales = entry.DailySaleData || [];
+        const itemised = entry.itemisedSale || [];
+        const expenses = entry.ExpensesData || [];
+
+        monthEntry.totalSales += dailySales.reduce((sum, sale) => sum + (sale["Total + Tip"] || 0), 0);
+        monthEntry.sales.push(...dailySales);
+
+        itemised.forEach(i => {
+            const itemName = i.Item || 'Unknown Item';
+            if (!monthEntry.itemsMap[itemName]) {
+                monthEntry.itemsMap[itemName] = { Item: itemName, "Qty.": 0, Total: 0 };
+            }
+            monthEntry.itemsMap[itemName]["Qty."] += i["Qty."] || 0;
+            monthEntry.itemsMap[itemName].Total += i.Total || 0;
+        });
+
+        expenses.forEach(e => {
+            const desc = (e.Description || 'Unknown').trim().toLowerCase();
+            const cat = (e.Category || 'Uncategorized').trim().toLowerCase();
+            const key = `${desc}|${cat}`;
+
+            if (!monthEntry.expensesMap[key]) {
+                monthEntry.expensesMap[key] = {
+                    Description: e.Description?.trim() || 'Unknown',
+                    Category: e.Category?.trim() || 'Uncategorized',
+                    Amount: 0,
+                };
+            }
+
+            monthEntry.expensesMap[key].Amount += e.Amount || 0;
+        });
+
+        monthEntry.totalExpenses += expenses.reduce((sum, exp) => sum + (exp.Amount || 0), 0);
+    });
+
+    return Object.values(monthMap).map(entry => ({
+        ...entry,
+        items: Object.values(entry.itemsMap),
+        expenses: Object.values(entry.expensesMap),
+    }));
+}
+
+function createTable(processed) {
+    const content = document.getElementById('content');
+  
+    content.innerHTML = `
+      <table id="sales-table">
+        <thead>
+          <tr>
+            <th>Month-Year</th>
+            <th>Total Sales</th>
+            <th>Total Expenses</th>
+            <th>Profit/Loss</th>  <!-- New column -->
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>`;
+
+    const tbody = content.querySelector('#sales-table tbody');
+  
+    processed.forEach((monthData, index) => {
+        const profitOrLoss = monthData.totalSales - monthData.totalExpenses;
+        const profitLossText = profitOrLoss >= 0 ? `${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(profitOrLoss)} Profit` : `${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(profitOrLoss)} Loss`;
+        const profitLossClass = profitOrLoss >= 0 ? 'profit' : 'loss';  // Add the class based on profit/loss
+
+        const mainRow = document.createElement('tr');
+        mainRow.innerHTML = `
+          <td>${monthData.monthYear}</td>
+          <td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(monthData.totalSales)}</td>
+          <td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(monthData.totalExpenses)}</td>
+          <td><span class="${profitLossClass}">${profitLossText}</span></td>  <!-- Profit/Loss Column -->
+          <td>
+            <button class="expand-icon" aria-label="Expand details for ${monthData.monthYear}" data-index="${index}">➕</button>
+          </td>
+        `;
+
+        const detailRow = document.createElement('tr');
+        detailRow.classList.add('expandable-row');
+        detailRow.classList.add('collapsed');  // Initially collapsed
+        detailRow.innerHTML = `
+          <td colspan="5">
+            <div class="details-section">
+              <div class="details-toggle" data-section="orders-${index}" tabindex="0">📦 Orders</div>
+              <div class="details-content" id="orders-${index}" style="display: none;">
+                <table>
+                  <tr><th>Order No.</th><th>Total</th></tr>
+                  ${monthData.sales.map(o => `<tr><td>${o["Order No."]}</td><td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format((o.Total || 0))}</td></tr>`).join('')}
+                </table>
+              </div>
+
+              <div class="details-toggle" data-section="items-${index}" tabindex="0">🍽️ Itemised Sales</div>
+              <div class="details-content" id="items-${index}" style="display: none;">
+                <table>
+                  <tr><th>Item</th><th>Qty</th><th>Total</th></tr>
+                  ${monthData.items.map(i => `<tr><td>${i.Item}</td><td>${i["Qty."]}</td><td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format((i.Total || 0))}</td></tr>`).join('')}
+                </table>
+              </div>
+
+              <div class="details-toggle" data-section="expenses-${index}" tabindex="0">💸 Expenses</div>
+              <div class="details-content" id="expenses-${index}" style="display: none;">
+                <table>
+                    <tr><th>Description</th><th>Category</th><th>Amount</th></tr>
+                    ${monthData.expenses.map(e => `
+                    <tr>
+                        <td>${e.Description}</td>
+                        <td>${e.Category || '-'}</td>
+                        <td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format((e.Amount || 0))}</td>
+                    </tr>
+                    `).join('')}
+                </table>
+              </div>  
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(mainRow);
+        tbody.appendChild(detailRow);
+    });
+
+    // Expand/Collapse logic for rows
+    document.querySelectorAll('.expand-icon').forEach(icon => {
+        icon.addEventListener('click', () => {
+            const index = icon.getAttribute('data-index');
+            const row = icon.closest('tr').nextElementSibling;
+
+            const isExpanded = row.classList.contains('expanded');
+
+            if (isExpanded) {
+                row.classList.remove('expanded');
+                icon.innerHTML = '➕';
+            } else {
+                // Collapse all others
+                document.querySelectorAll('.expandable-row').forEach(r => r.classList.remove('expanded'));
+                document.querySelectorAll('.expand-icon').forEach(i => i.innerHTML = '➕');
+
+                row.classList.add('expanded');
+                icon.innerHTML = '➖';
+            }
+        });
+    });
+
+    // Toggle individual content sections (Orders, Itemized Sales, Expenses)
+    document.querySelectorAll('.details-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const section = document.getElementById(toggle.dataset.section);
+            section.style.display = section.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Optional: allow keyboard accessibility
+        toggle.addEventListener('keypress', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle.click();
+            }
+        });
+    });
+}
 
 
-        tr.appendChild(td);
+
+// === Weekly View ===
+
+function getStartOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? 6 : day - 1); // Adjust for Monday as the start of the week
+    d.setDate(d.getDate() - diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+  
+  function getEndOfWeek(date) {
+    const start = getStartOfWeek(date);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return end;
+  }
+  
+  function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+  function processWeeklyData(data) {
+    const weekData = [];
+  
+    data.forEach(entry => {
+      const entryDate = new Date(entry.Date.split('T')[0]);
+      const startOfWeek = getStartOfWeek(entryDate);
+      const endOfWeek = getEndOfWeek(entryDate);
+      const weekRange = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+  
+      let week = weekData.find(w => w.weekRange === weekRange);
+      if (!week) {
+        week = {
+          weekRange,
+          totalOrders: 0,
+          totalItemsSold: 0,
+          totalSales: 0,
+          itemsSold: {}
+        };
+        week.entries = [];
+        weekData.push(week);
+
+      }
+  
+      // Check if DailySaleData and itemisedSale exist
+      if (Array.isArray(entry.DailySaleData)) {
+        week.totalOrders += entry.DailySaleData.length;
+        week.totalSales += entry.DailySaleData.reduce((acc, order) => acc + (order.Total || 0), 0);
+      }
+  
+      if (Array.isArray(entry.itemisedSale)) {
+        entry.itemisedSale.forEach(item => {
+          const qty = item["Qty."] || 0;
+          week.totalItemsSold += qty;
+          if (!week.itemsSold[item.Item]) {
+            week.itemsSold[item.Item] = 0;
+          }
+          week.itemsSold[item.Item] += qty;
+        });
       }
 
-      tbody.appendChild(tr);
+      week.entries.push(entry);
+
     });
-}
-
-
-
-function showLoading(isLoading) {
-  const spinner = document.getElementById("loadingSpinner");
-  const body = document.body;
-
-  if (isLoading) {
-    spinner.style.display = "flex"; // Show the spinner
-    body.classList.add("blur"); // Apply blur effect to the body
-  } else {
-    spinner.style.display = "none"; // Hide the spinner
-    body.classList.remove("blur"); // Remove the blur effect from body
-  }
-}
-
-// 📦 Fetch inventory data
-function fetchInventoryData() {
-  showLoading(true); // Show loading spinner and blur page
-
-  fetch(apiUrl + '?action=getInventory')
-    .then(response => response.json())
-    .then(data => {
-      // inventoryData = data;
-      buildInventoryTable(data);
-      showLoading(false); // Hide loading spinner and unblur the page
-    })
-    .catch(err => {
-      console.error("Error fetching inventory data:", err);
-      showLoading(false); // Hide loading spinner in case of error
+  
+    // Add insights
+    weekData.forEach(week => {
+      const mostSold = Object.entries(week.itemsSold).reduce((a, b) => b[1] > a[1] ? b : a, ['', 0]);
+      const leastSold = Object.entries(week.itemsSold).reduce((a, b) => b[1] < a[1] ? b : a, ['', Infinity]);
+  
+      week.mostSoldItem = { name: mostSold[0], qty: mostSold[1] };
+      week.leastSoldItem = { name: leastSold[0], qty: leastSold[1] };
+      week.averageSalesPerDay = (week.totalSales / 7).toFixed(2);
     });
-}
-
-// 📦 Fetch expenses data
-function fetchExpensesData() {
-  showLoading(true); // Show loading spinner and blur page
-
-  fetch(apiUrl + '?action=getExpenses')
-    .then(response => response.json())
-    .then(data => {
-      ExpenseData = data;
-      applyFilters();   
-      showLoading(false); // Hide loading spinner and unblur the page
-    })
-    .catch(err => {
-      console.error("Error fetching Expenses data:", err);
-      showLoading(false); // Hide loading spinner in case of error
-    });
-}
-
-function populateExpensesTable(data) {
-  const tableBody = document.getElementById('expensesTableBody');
-  tableBody.innerHTML = '';
-
-  data.forEach(row => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${formatDate(row.Date)}</td>
-      <td>${row.Description}</td>
-      <td class="text-danger">₹${parseFloat(row.Amount || 0).toFixed(2)}</td>
-      <td>${row.Category}</td>
-    `;
-    tableBody.appendChild(tr);
-  });
-}
-
-function calculateExpensesSummary(data) {
-  const total = data.reduce((sum, row) => sum + parseFloat(row.Amount || 0), 0);
-  document.getElementById('totalExpenses').textContent = `₹${total.toFixed(2)}`;
   
-  // ✅ Update new card
-  const card = document.getElementById('totalExpensesCard');
-  if (card) card.textContent = `₹${total.toFixed(2)}`;
-}
-
-
-
-function buildWeeklyDonutChart(data) {
-  const weeks = {};
-
-  data.forEach(row => {
-    const dateObj = new Date(row.Date);
-    const day = dateObj.getDay();
-    const weekStart = new Date(dateObj);
-    weekStart.setDate(dateObj.getDate() - day);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-
-    const weekKey = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
-    weeks[weekKey] = (weeks[weekKey] || 0) + Number(row.Total);
-  });
-
-  const labels = Object.keys(weeks);
-  const values = Object.values(weeks);
-
-  // ✅ Clean up existing chart safely
-  if (weeklyDonutChartInstance instanceof Chart) {
-    weeklyDonutChartInstance.destroy();
+    return weekData;
   }
-
-  const ctx = document.getElementById('weeklyDonutChart').getContext('2d');
-  weeklyDonutChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Weekly Sales',
-        data: values,
-        backgroundColor: [
-          '#FFD700', // Gold
-          '#FFF8DC', // Cornsilk (creamy)
-          '#FFA500', // Orange
-          '#F5DEB3', // Wheat
-          '#D4AF37', // Rich gold
-          '#B8860B', // Dark goldenrod
-          '#000000', // Black
-          '#FFFFFF'  // White
-        ],
-        borderColor: '#fff',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        tooltip: {
-          backgroundColor: '#fff8dc',
-          titleColor: '#000',
-          bodyColor: '#333',
-          borderColor: '#FFD700',
-          borderWidth: 1,
-          callbacks: {
-            label: (tooltipItem) => {
-              const value = tooltipItem.raw;
-              return `₹${Number(value).toFixed(2)}`;
-            }
-          }
-        },
-        legend: {
-          position: 'bottom',
-          labels: {
-            color: '#333',
-            font: {
-              weight: '600'
-            }
-          }
-        }
-      },
-      cutout: '65%' // Inner radius for elegance
-    }
-  });
   
-}
-
-
-
-function buildMonthlyBarChart(data) {
-  const monthly = {};
-
-  data.forEach(row => {
-    const date = new Date(row.Date);
-    const monthKey = date.toLocaleString('default', { month: 'short', year: 'numeric' }); // "Mar 2025"
-    monthly[monthKey] = (monthly[monthKey] || 0) + Number(row.Total);
-  });
-
-  const labels = Object.keys(monthly);
-  const values = Object.values(monthly);
-
-  // Cleanup existing chart if exists
-  if (monthlyBarChartInstance instanceof Chart) {
-    monthlyBarChartInstance.destroy();
-  }
-
-  const ctx = document.getElementById("monthlyBarChart").getContext("2d");
-
-  monthlyBarChartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Monthly Sales',
-        data: values,
-        backgroundColor: '#FFD700',     // Gold
-        borderColor: '#B8860B',         // Dark golden border
-        borderWidth: 1,
-        borderRadius: 6,
-        hoverBackgroundColor: '#FFC300' // Goldenrod hover
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            color: '#333', // Dark gray for visibility
-            callback: function (value) {
-              return `₹${value.toFixed(2)}`;
-            }
-          },
-          grid: {
-            color: 'rgba(0,0,0,0.05)' // Subtle grid
-          }
-        },
-        x: {
-          ticks: {
-            color: '#333'
-          },
-          grid: {
-            color: 'rgba(0,0,0,0.03)'
-          }
-        }
-      },
-      plugins: {
-        tooltip: {
-          backgroundColor: '#fff8dc', // Light creamy gold
-          titleColor: '#000',
-          bodyColor: '#333',
-          borderColor: '#FFD700',
-          borderWidth: 1,
-          callbacks: {
-            label: (context) => `₹${context.raw.toFixed(2)}`
-          }
-        },
-        legend: {
-          display: false
-        }
-      }
-    }
-  });
   
-}
-
-
-function animateValue(element, start, end, duration) {
-  let startTime = null;
-  const step = (currentTime) => {
-    if (!startTime) startTime = currentTime;
-    const progress = currentTime - startTime;
-    const percent = Math.min(progress / duration, 1);
-    const value = Math.floor(percent * (end - start) + start);
-    element.textContent = element.dataset.prefix + value.toLocaleString();
-    if (percent < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('table thead th').forEach((th, colIndex) => {
-    th.style.cursor = 'pointer';
-    th.addEventListener('click', () => {
-      const table = th.closest('table');
-      const tbody = table.querySelector('tbody');
-      const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => {
-        // ✅ Skip rows with colspans or unexpected structure
-        return row.children.length === table.tHead.rows[0].children.length;
+  function renderWeeklyView() {
+    const content = document.getElementById('content');
+    content.innerHTML = '';
+  
+    const weekSalesData = processWeeklyData(filteredData);
+  
+    weekSalesData.forEach((week, index) => {
+      const detailsId = `week-details-${index}`;
+      const row = document.createElement('div');
+      row.className = 'daily-row';
+  
+      row.innerHTML = `
+        <div class="summary-row">
+          <span><strong>Week:</strong> ${week.weekRange}</span>
+          <span><strong>Orders:</strong> ${week.totalOrders}</span>
+          <span><strong>Items Sold:</strong> ${week.totalItemsSold}</span>
+          <span><strong>Sales:</strong> ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(week.totalSales)}</span>
+          <button class="expand-btn">➕</button>
+        </div>
+  
+        <div class="details-section" id="${detailsId}">
+          <div class="weekly-insights">
+            <h4>Weekly Insights</h4>
+            <ul>
+              <li>Most Sold Item: ${week.mostSoldItem.name} (${week.mostSoldItem.qty} sold)</li>
+              <li>Least Sold Item: ${week.leastSoldItem.name} (${week.leastSoldItem.qty} sold)</li>
+              <li>Average Sales per Day: ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(week.averageSalesPerDay)}</li>
+            </ul>
+          </div>
+  
+          <div class="details-content">
+            <h4>Orders</h4>
+            <table>
+              <thead>
+                <tr><th>Order No.</th><th>Total</th></tr>
+              </thead>
+              <tbody>
+                ${
+                  week.entries.flatMap(entry =>
+                    entry.DailySaleData?.map(order =>
+                      `<tr><td>${order["Order No."]}</td><td>${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(order.Total)}</td></tr>`
+                    ) || []
+                  ).join('')
+                }
+              </tbody>
+            </table>
+          </div>
+  
+          <div class="details-content">
+            <h4>Items Sold</h4>
+            <table>
+              <thead>
+                <tr><th>Item</th><th>Quantity</th></tr>
+              </thead>
+              <tbody>
+                ${
+                  week.entries.flatMap(entry =>
+                    entry.itemisedSale?.map(item =>
+                      `<tr><td>${item.Item}</td><td>${item["Qty."]}</td></tr>`
+                    ) || []
+                  ).join('')
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+  
+      const expandBtn = row.querySelector('.expand-btn');
+      const detailsSection = row.querySelector('.details-section');
+      expandBtn.addEventListener('click', () => {
+        const isExpanded = detailsSection.style.display === 'block';
+        detailsSection.style.display = isExpanded ? 'none' : 'block';
+        expandBtn.textContent = isExpanded ? '➕' : '➖';
       });
-console.log(rows);
-      const asc = th.classList.toggle('asc');
-
-      rows.sort((a, b) => {
-        const cellA = a.children[colIndex]?.innerText.trim() || '';
-        const cellB = b.children[colIndex]?.innerText.trim() || '';
-
-        const numA = parseFloat(cellA.replace(/[^0-9.-]+/g, ''));
-        const numB = parseFloat(cellB.replace(/[^0-9.-]+/g, ''));
-
-        const isNumber = !isNaN(numA) && !isNaN(numB);
-        if (isNumber) return asc ? numA - numB : numB - numA;
-        return asc
-          ? cellA.localeCompare(cellB)
-          : cellB.localeCompare(cellA);
-      });
-
-      tbody.innerHTML = '';
-      rows.forEach(row => tbody.appendChild(row));
+  
+      content.appendChild(row);
     });
-  });
-});
+  }
+  
 
+  function toggleWeekDetails(id, el) {
+    const details = document.getElementById(id);
+    const expander = el.querySelector('.expander');
+    if (details.style.display === 'none' || details.style.display === '') {
+      details.style.display = 'block';
+      expander.textContent = '➖';
+    } else {
+      details.style.display = 'none';
+      expander.textContent = '➕';
+    }
+  }
+    
+  
 
+// === Daily View ===
+function renderDailyView() {
+    const content = document.getElementById('content');
+    content.innerHTML = '';
+  
+    if (filteredData.length === 0) {
+      return renderError("No matching sales data.");
+    }
+  
+    const currencyFormatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR'
+    });
+  
+    filteredData.forEach(entry => {
+      const row = document.createElement('div');
+      row.classList.add('daily-row');
+  
+      const totalSales = entry.DailySaleData.reduce((acc, order) => acc + order.Total, 0);
+      const totalItems = entry.itemisedSale.reduce((acc, item) => acc + item["Qty."], 0);
+  
+      row.innerHTML = `
+        <div class="summary-row">
+          <span class="date">Date: ${new Intl.DateTimeFormat('en-GB').format(new Date(entry.Date))}</span>
+          <span>Total Orders: ${entry.DailySaleData.length}</span>
+          <span>Total Items Sold: ${totalItems}</span>
+          <span>Total Sales: ${currencyFormatter.format(totalSales)}</span>
+          <button class="expand-btn">➕</button>
+        </div>
+        <div class="details-section">
+          <div class="order-details">
+            <h4>Orders</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order No</th>
+                  <th>Payment Type</th>
+                  <th>Order Type</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${entry.DailySaleData.map(order => `
+                  <tr>
+                    <td>${order["Order No."]}</td>
+                    <td>${order["Payment Type"]}</td>
+                    <td>${order["Order Type"]}</td>
+                    <td>${currencyFormatter.format(order.Total)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div class="item-details">
+            <h4>Items Sold</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${entry.itemisedSale.map(item => `
+                  <tr>
+                    <td>${item.Item}</td>
+                    <td>${item["Qty."]}</td>
+                    <td>${currencyFormatter.format(item.Total)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+  
+      const expandBtn = row.querySelector('.expand-btn');
+      const detailsSection = row.querySelector('.details-section');
+  
+      expandBtn.addEventListener('click', () => {
+        const isExpanded = detailsSection.style.display === 'block';
+        detailsSection.style.display = isExpanded ? 'none' : 'block';
+        expandBtn.textContent = isExpanded ? '➕' : '➖';
+      });
+  
+      content.appendChild(row);
+    });
+  }
+  
+  
+// === Error Rendering ===
 
-document.getElementById("yearSelect").addEventListener("change", e => {
-  selectedYear = e.target.value;
-  applyFilters();
-});
+function renderError(message) {
+  const content = document.getElementById('content');
+  content.innerHTML = `<p class="error">${message}</p>`;
+}
 
-document.getElementById("monthSelect").addEventListener("change", e => {
-  selectedMonth = e.target.value;
-  applyFilters();
-});
-
-// 🔄 Connect refresh button
-document.getElementById("refreshInventoryBtn").addEventListener("click", () => {
-  fetch(`${apiUrl}?action=updateInventory`)
-    .then(() => fetchInventoryData())
-    .catch(err => alert("Failed to refresh inventory"));
-});
-
-document.getElementById('inventorySearch').addEventListener('input', function () {
-  const query = this.value.toLowerCase();
-  const rows = document.querySelectorAll('#inventoryTableBody tr');
-
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(query) ? '' : 'none';
-  });
-});
-
-
-
-document.getElementById("monthSelect").value = selectedMonth;
-
-document.getElementById("lowStockSwitch").addEventListener("change", (e) => {
-  showingLowStock = e.target.checked;
-  fetchInventoryData();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  fetchSaleItemsData();
-  fetchExpensesData();
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.card-value').forEach((el) => {
-    const end = parseInt(el.dataset.value || "0", 10);
-    const prefix = el.dataset.prefix || "";
-    el.dataset.prefix = prefix;
-    animateValue(el, 0, end, 1500);
-  });
-});
+function toggleDetails(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+  

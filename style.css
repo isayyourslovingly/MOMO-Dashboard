@@ -1,352 +1,637 @@
-/* =====================
-   🌐 Base Styles
-===================== */
-body {
-  padding: 2rem;
-  background-color: #fffdf5;
-  font-family: 'Segoe UI', sans-serif;
-  color: #1a1a1a;
-  transition: filter 0.3s ease;
+/* Import Inter from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* New palette */
+  --aureolin: #ffee32;
+  --jonquil: #ffd100;
+  --eerie-black: #202020;
+  --davys-gray: #4d4d4d;
+
+  /* Mapped variables */
+  --rich-black: var(--eerie-black);
+  --oxford-blue: var(--davys-gray);
+  --yale-blue: var(--davys-gray);
+  --mikado-yellow: var(--aureolin);
+  --gold: var(--jonquil);
+  --cornsilk: #f5f5f5; /* Light neutral background */
 }
 
-.blur {
-  filter: blur(4px);
-  pointer-events: none;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* =====================
-   📛 Branding & Logos
-===================== */
-.dashboard-logo {
-  height: 1.8em;
-  vertical-align: middle;
-  object-fit: contain;
-  margin-right: 0.5rem;
+html, body {
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--cornsilk);
+  color: var(--rich-black);
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-/* =====================
-   ✨ Summary Cards
-===================== */
-.summary-card {
-  padding: 1.2rem;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 600;
-  background-color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease-in-out, background-color 0.3s ease;
-}
+/* Header */
+.app-header {
+    background: url('images/Momo_Header.png') center/cover no-repeat;
+        background-size: contain; /* or 'cover' if you want full coverage */
+        background-repeat: no-repeat;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+  
 
-.summary-card:hover {
-  transform: translateY(-4px);
-  background-color: #fff9e8;
-}
-
-.card-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-top: 0.5rem;
-  display: block;
-  color: inherit;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.card-value[data-target] {
-  transition: transform 0.5s ease;
-}
-
-.card-value.animating {
-  transform: scale(1.1);
-}
-
-/* 🌈 Golden Color Variants */
-.col-md-3:nth-child(1) .summary-card { background-color: #fff7d6; color: #c18f00; }
-.col-md-3:nth-child(2) .summary-card { background-color: #fdf4e3; color: #a87600; }
-.col-md-3:nth-child(3) .summary-card { background-color: #fffbea; color: #b89100; }
-.col-md-3:nth-child(4) .summary-card { background-color: #fff2db; color: #b25c00; }
-
-/* =====================
-   🎛️ Global Filters
-===================== */
-#globalFilters {
-  background: #fffbe6;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-#globalFilters label {
-  font-weight: 500;
-}
-
-/* =====================
-   📊 Charts
-===================== */
-.chart-container {
-  margin-top: 2rem;
-}
-
-.chart-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.chart-box {
-  flex: 1 1 400px;
-  max-width: 500px;
-  height: 300px;
-  padding: 10px;
-  background-color: #fffef9;
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+/* Filters */
+.app-filters {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: var(--yale-blue);
+  padding: 0.75rem;
+  z-index: 900;
   display: flex;
   flex-direction: column;
-  margin-bottom: 30px;
+  gap: 0.5rem;
 }
 
-.chart-box canvas {
+.filters {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-around;
+}
+
+.tab-button {
   flex: 1;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* =====================
-   🧭 Navigation Tabs
-===================== */
-#viewTabs .nav-link {
-  font-weight: 600;
-  color: #333;
-  border-radius: 6px;
-  margin-right: 6px;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-#viewTabs .nav-link.active {
-  color: #fff !important;
-}
-
-#viewTabs .nav-link.active[href="#itemised"]   { background-color: #c18f00; }
-#viewTabs .nav-link.active[href="#weekly"]     { background-color: #a87600; }
-#viewTabs .nav-link.active[href="#monthly"]    { background-color: #b89100; }
-#viewTabs .nav-link.active[href="#inventory"]  { background-color: #b25c00; }
-#viewTabs .nav-link.active[href="#expenses"]   { background-color: #aa3f00; }
-
-.tab-content > .tab-pane.active {
-  background-color: #fffef9;
-  padding: 1rem;
-  border-radius: 8px;
-  transition: background-color 0.5s ease-in-out;
-}
-
-/* =====================
-   📋 Tables
-===================== */
-table {
-  background-color: #fff;
-  border-radius: 6px;
-}
-
-table thead {
-  background-color: #fff6cc;
-  color: #333;
-}
-
-table tbody tr {
-  background-color: #fffdf5;
-}
-
-table tbody tr:nth-child(even) {
-  background-color: #fdf7e4;
-}
-
-.table th,
-.table td {
-  vertical-align: middle;
-  font-size: 0.85rem;
-  padding: 8px;
-}
-
-td:nth-child(2),
-td:nth-child(6),
-.summary-card .card-value {
-  font-weight: 600;
-}
-
-.table-sm th,
-.table-sm td {
-  padding: 4px 6px;
-  font-size: 0.85rem;
-}
-
-/* =====================
-   📦 Inventory
-===================== */
-.low-stock {
-  background-color: #fff3cd;
-  color: #856404;
+  padding: 0.5rem;
+  background-color: var(--mikado-yellow);
+  border: none;
+  color: var(--rich-black);
   font-weight: bold;
-  border-radius: 4px;
-  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 80px;
+  transition: background 0.2s, color 0.2s;
 }
 
-#lowStockItems {
-  color: #b25c00;
-  font-weight: 500;
+.tab-button:hover {
+  background-color: var(--gold);
 }
 
-/* =====================
-   🧪 Toggles
-===================== */
-.form-check-input:checked {
-  background-color: #c18f00;
-  border-color: #c18f00;
+/* Content Area */
+.app-content {
+  position: absolute;
+  top: 160px;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #fff;
 }
 
-.form-check-input {
-  background-color: #aaa;
-  border-color: #aaa;
+.daily-row {
+  background-color: var(--cornsilk);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  padding: 15px;
+  transition: transform 0.3s ease;
 }
 
-/* =====================
-   ⏳ Loading Spinner
-===================== */
-.loading-spinner {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(255, 255, 255, 0.7);
-  display: none;
+.daily-row:hover {
+  transform: translateY(-5px);
+}
+
+.summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+}
+
+.summary-row span {
+  font-size: 0.95rem;
+  color: var(--oxford-blue);
+}
+
+.expand-btn {
+  background-color: transparent;
+  border: 1px solid var(--oxford-blue);
+  border-radius: 4px;
+  color: var(--oxford-blue);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  transition: background-color 0.3s ease;
+}
+
+.expand-btn:hover {
+  background-color: var(--yale-blue);
+  color: white;
+}
+
+.details-section {
+  display: none;
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 3px solid var(--yale-blue);
+}
+
+.details-section h4 {
+  font-size: 1.1rem;
+  color: var(--yale-blue);
+  margin-bottom: 10px;
+}
+
+.details-section ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  color: var(--oxford-blue);
+}
+
+.weekly-insights {
+  margin-bottom: 10px;
+  background-color: #eef6f9;
+  padding: 10px;
+  border-left: 4px solid var(--yale-blue);
+  border-radius: 6px;
+}
+
+.weekly-insights h4 {
+  margin-bottom: 6px;
+  color: var(--rich-black);
+}
+
+.weekly-insights ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.weekly-insights li {
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--rich-black);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem;
   z-index: 1000;
 }
 
-.spinner-border {
-  width: 3rem;
-  height: 3rem;
-  color: #c18f00;
-}
-
-/* =====================
-   📱 Mobile Tweaks
-===================== */
-@media screen and (max-width: 768px) {
-  .chart-row, .chart-box {
-    display: none !important;
-  }
-
-  .summary-card {
-    font-size: 0.95rem;
-    padding: 0.75rem;
-  }
-
-  .card-value {
-    font-size: 1.2rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  body {
-    font-size: 14px;
-  }
-
-  h1, h2, h3 {
-    font-size: 1rem;
-  }
-
-  .nav-link {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.6rem;
-  }
-
-  .tab-content {
-    font-size: 0.95rem;
-  }
-}
-
-/* =====================
-   ✨ Modern Visual Enhancements
-===================== */
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #007bff, #6610f2);
-}
-
-.rounded-pill {
-  border-radius: 999px !important;
-  padding: 6px 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.rounded-pill:hover {
-  transform: scale(1.05);
-}
-/* 🎯 Insights Section */
-.insight-list {
+.app-footer button {
+  background-color: var(--mikado-yellow);
   border: none;
-  padding: 0;
-  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.insight-item {
-  margin-bottom: 0.5rem;
-  border: none;
-  border-radius: 10px;
-  padding: 1rem 1.2rem;
-  background: #fffef5;
-  font-weight: 500;
-  font-size: 1rem;
-  color: #444;
+/* Weekly & Monthly Summary */
+.week-row {
+  border-bottom: 1px solid #ccc;
+  padding: 0.75rem 0;
+}
+
+.week-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f4f4f4;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.week-summary:hover {
+  background-color: #e0e0e0;
+}
+
+.week-details {
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-left: 4px solid var(--yale-blue);
+  margin-top: 0.5rem;
+}
+
+/* Monthly Calendar */
+.monthly-summary {
+  margin-bottom: 20px;
+}
+
+.month-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.insight-item strong {
+.month-header h2 {
+  margin: 0;
+}
+
+.expander {
+  background-color: var(--yale-blue);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.calendar-view {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendar-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
   font-weight: bold;
+  margin-bottom: 5px;
 }
 
-.insight-item .text-success {
-  font-weight: bold;
+.calendar-day {
+  width: 13%;
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #ddd;
+  margin: 2px;
+  border-radius: 6px;
 }
 
-.insight-item .text-danger {
-  font-weight: bold;
+.calendar-day p {
+  font-size: 12px;
+  margin-top: 5px;
 }
 
-/* Mobile Optimization */
-@media screen and (max-width: 600px) {
-  .insight-item {
-    font-size: 0.95rem;
-    padding: 0.8rem;
-  }
+.empty {
+  width: 13%;
+  height: 40px;
+  display: inline-block;
 }
 
-.emoji {
-  font-size: 2rem;
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead {
+  background: var(--yale-blue);
+  color: white;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.expand-icon:hover,
+.expand-icon:focus {
+  color: var(--gold);
+  outline: none;
+}
+
+.expanded {
+  display: table-row;
+}
+
+.collapsed {
+  display: none;
+}
+
+.expand-icon {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #007bff;
+  transition: color 0.3s;
+}
+
+.expandable-row {
+  display: none;
+}
+
+.expandable-row.expanded {
+  display: table-row;
+}
+
+.expandable-row .details-section {
+  display: none;
+}
+
+.expandable-row.expanded .details-section {
   display: block;
 }
 
-.summary-card .label {
-  font-size: 0.9rem;
-  color: #777;
-  margin-bottom: 0.2rem;
+.details-toggle {
+  background-color: var(--yale-blue);
+  color: white;
+  padding: 10px;
+  margin: 5px 0;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-.summary-card {
-  border-radius: 1rem;
-  background-color: #fff;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
+.details-toggle:hover {
+  background-color: #e1e1e1;
+  color: var(--yale-blue);
 }
 
-.summary-card:hover {
-  transform: translateY(-3px);
+.details-content {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
+
+.details-content table {
+  width: 100%;
+  border: 1px solid #ccc;
+}
+
+.details-content th,
+.details-content td {
+  padding: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+/* Styles for Profit and Loss */
+.profit {
+    background-color: #28a745; /* Bright green */
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  
+  .loss {
+    background-color: #dc3545; /* Bright red */
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  /* Expenses Style */
+/* Expense Grouping */
+.expense-group {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: var(--cornsilk);
+  }
+  
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--yale-blue);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .group-header .month-year {
+    font-size: 1.2rem;
+  }
+  
+  .group-header .total {
+    font-size: 1rem;
+  }
+  
+  .group-header .expander {
+    background-color: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .group-header .expander:hover {
+    background-color: var(--gold);
+    color: white;
+  }
+  
+  /* Category Group */
+  .category-group {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+  
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--mikado-yellow);
+    color: var(--rich-black);
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .category-header .category-name {
+    font-size: 1.1rem;
+  }
+  
+  .category-header .category-total {
+    font-size: 1rem;
+  }
+  
+  .category-header .expander {
+    background-color: transparent;
+    border: 1px solid var(--rich-black);
+    color: var(--rich-black);
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .category-header .expander:hover {
+    background-color: var(--yale-blue);
+    color: white;
+  }
+  
+  /* Expense Details Table */
+  .expense-details {
+    margin-top: 10px;
+    display: none;
+  }
+  
+  .expense-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .expense-details th, .expense-details td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .expense-details th {
+    background-color: var(--yale-blue);
+    color: white;
+  }
+  
+  .expense-details td {
+    background-color: var(--cornsilk);
+  }
+  
+  .expense-details .amount {
+    text-align: right;
+  }
+  
+  /* Expand/Collapse Icons */
+  .expander {
+    font-size: 1.2rem;
+    color: var(--gold);
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: color 0.3s;
+  }
+  
+  .expander:hover {
+    color: var(--yale-blue);
+  }
+  
+  .expandable-row {
+    display: none;
+  }
+  
+  .expandable-row.expanded {
+    display: table-row;
+  }
+  
+  .expandable-row .details-section {
+    display: none;
+  }
+  
+  .expandable-row.expanded .details-section {
+    display: block;
+  }
+  
+  /* Category Grouping Toggle */
+  .details-section {
+    display: none;
+    margin-top: 10px;
+    padding-left: 20px;
+    border-left: 3px solid var(--yale-blue);
+  }
+  
+  .details-section h4 {
+    font-size: 1.1rem;
+    color: var(--yale-blue);
+    margin-bottom: 10px;
+  }
+  
+  .details-section ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: var(--oxford-blue);
+  }
+  
+  /* Accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8); /* subtle overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .loader-logo {
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+  }
+  
+  /* Optional: rotate animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
