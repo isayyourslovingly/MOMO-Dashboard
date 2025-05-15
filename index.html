@@ -1,55 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Sales Dashboard</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background-color: #f4f4f4; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Business Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  
 </head>
 <body>
-  <h1>📊 My Sales Dashboard</h1>
-  <div id="summary"></div>
-  <h2>Itemised Sales</h2>
-  <table id="salesTable">
-    <thead><tr></tr></thead>
-    <tbody></tbody>
-  </table>
 
-  <script>
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwdxkQVy4WCXUWb6tWPpkVQymLlzpBuqPxIWc8LoOjLJfTtfSYUApksUAs-d_cxqENwLw/exec';
+  <!-- Header -->
+  <header class="app-header">
+    <!-- <h1 class="logo">My Business</h1> -->
+  </header>
 
-    fetch(apiUrl)
-      .then(res => res.json())
-      .then(data => {
-        if (data.length === 0) return;
+  <!-- Filters and Tabs -->
+  <div class="app-filters">
+    <div class="filters">
+      <select id="yearSelect"></select>
+      <select id="monthSelect"></select>
+      <input type="date" id="datePicker" />
+    </div>
+    <div class="tab-buttons">
+      <button class="tab-button active" id="tab-dashboard" data-tab="dashboard">Dashboard</button>
+      <button class="tab-button" id="tab-daily" data-tab="daily">Day View</button>
+      <button class="tab-button" id="tab-week" data-tab="week">Week View</button>
+      <button class="tab-button" id="tab-month" data-tab="month">Month View</button>
+      <button class="tab-button" id="tab-expenses" data-tab="expenses">Expenses</button>
+      <button class="tab-button" id="tab-inventory" data-tab="inventory">Inventory</button>
+    </div>
+  </div>
 
-        const headers = Object.keys(data[0]);
-        const thead = document.querySelector('#salesTable thead tr');
-        const tbody = document.querySelector('#salesTable tbody');
+  <!-- Main Content -->
+  <main class="app-content" id="content">
+    <!-- Here is where the Monthly Sales Table will be displayed -->
+    <div id="loader" class="loader-container" style="display: none;">
+        <img src="images/yeti2.svg" alt="Loading..." class="loader-logo" />
+      </div>
+  </main>
+ 
+  
 
-        headers.forEach(h => {
-          const th = document.createElement('th');
-          th.textContent = h;
-          thead.appendChild(th);
-        });
+  <!-- Footer -->
+  <footer class="app-footer">
+    <button id="homeBtn">Home</button>
+    <button id="refreshBtn">Refresh</button>
+    <button>Settings</button>
+  </footer>
 
-        data.forEach(row => {
-          const tr = document.createElement('tr');
-          headers.forEach(h => {
-            const td = document.createElement('td');
-            td.textContent = row[h];
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-
-        // Optionally generate some summary info
-        document.getElementById("summary").innerHTML =
-          `<p>Total Entries: <strong>${data.length}</strong></p>`;
-      });
-  </script>
+  <script src="app.js"></script>
+  <!-- <script src="script.js"></script> Your script for handling table logic -->
 </body>
 </html>

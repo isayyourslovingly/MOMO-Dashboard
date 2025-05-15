@@ -1,0 +1,823 @@
+/* Import Inter from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* New palette */
+  --aureolin: #ffee32;
+  --jonquil: #ffd100;
+  --eerie-black: #202020;
+  --davys-gray: #4d4d4d;
+
+  /* Mapped variables */
+  --rich-black: var(--eerie-black);
+  --oxford-blue: var(--davys-gray);
+  --yale-blue: var(--davys-gray);
+  --mikado-yellow: var(--aureolin);
+  --gold: var(--jonquil);
+  --cornsilk: #f5f5f5; /* Light neutral background */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--cornsilk);
+  color: var(--rich-black);
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Header */
+.app-header {
+    background: url('images/Momo_Header.png') center/cover no-repeat;
+        background-size: contain; /* or 'cover' if you want full coverage */
+        background-repeat: no-repeat;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        height: 60px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+  
+
+/* Filters */
+.app-filters {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: var(--yale-blue);
+  padding: 0.75rem;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-around;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: var(--mikado-yellow);
+  border: none;
+  color: var(--rich-black);
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 80px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-button:hover {
+  background-color: var(--gold);
+}
+
+/* Content Area */
+.app-content {
+  position: absolute;
+  top: 160px;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.daily-row {
+  background-color: var(--cornsilk);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  padding: 15px;
+  transition: transform 0.3s ease;
+}
+
+.daily-row:hover {
+  transform: translateY(-5px);
+}
+
+.summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-row span {
+  font-size: 0.95rem;
+  color: var(--oxford-blue);
+}
+
+.expand-btn {
+  background-color: transparent;
+  border: 1px solid var(--oxford-blue);
+  border-radius: 4px;
+  color: var(--oxford-blue);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  transition: background-color 0.3s ease;
+}
+
+.expand-btn:hover {
+  background-color: var(--yale-blue);
+  color: white;
+}
+
+.details-section {
+  display: none;
+  margin-top: 15px;
+  padding-left: 20px;
+  border-left: 3px solid var(--yale-blue);
+}
+
+.details-section h4 {
+  font-size: 1.1rem;
+  color: var(--yale-blue);
+  margin-bottom: 10px;
+}
+
+.details-section ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  color: var(--oxford-blue);
+}
+
+.weekly-insights {
+  margin-bottom: 10px;
+  background-color: #eef6f9;
+  padding: 10px;
+  border-left: 4px solid var(--yale-blue);
+  border-radius: 6px;
+}
+
+.weekly-insights h4 {
+  margin-bottom: 6px;
+  color: var(--rich-black);
+}
+
+.weekly-insights ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.weekly-insights li {
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--rich-black);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem;
+  z-index: 1000;
+}
+
+.app-footer button {
+  background-color: var(--mikado-yellow);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Weekly & Monthly Summary */
+.week-row {
+  border-bottom: 1px solid #ccc;
+  padding: 0.75rem 0;
+}
+
+.week-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f4f4f4;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.week-summary:hover {
+  background-color: #e0e0e0;
+}
+
+.week-details {
+  background-color: #fff;
+  padding: 1rem 2rem;
+  border-left: 4px solid var(--yale-blue);
+  margin-top: 0.5rem;
+}
+
+/* Monthly Calendar */
+.monthly-summary {
+  margin-bottom: 20px;
+}
+
+.month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.month-header h2 {
+  margin: 0;
+}
+
+.expander {
+  background-color: var(--yale-blue);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.calendar-view {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calendar-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.calendar-day {
+  width: 13%;
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #ddd;
+  margin: 2px;
+  border-radius: 6px;
+}
+
+.calendar-day p {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.empty {
+  width: 13%;
+  height: 40px;
+  display: inline-block;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead {
+  background: var(--yale-blue);
+  color: white;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.expand-icon:hover,
+.expand-icon:focus {
+  color: var(--gold);
+  outline: none;
+}
+
+.expanded {
+  display: table-row;
+}
+
+.collapsed {
+  display: none;
+}
+
+.expand-icon {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #007bff;
+  transition: color 0.3s;
+}
+
+.expandable-row {
+  display: none;
+}
+
+.expandable-row.expanded {
+  display: table-row;
+}
+
+.expandable-row .details-section {
+  display: none;
+}
+
+.expandable-row.expanded .details-section {
+  display: block;
+}
+
+.details-toggle {
+  background-color: var(--yale-blue);
+  color: white;
+  padding: 10px;
+  margin: 5px 0;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.details-toggle:hover {
+  background-color: #e1e1e1;
+  color: var(--yale-blue);
+}
+
+.details-content {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.details-content table {
+  width: 100%;
+  border: 1px solid #ccc;
+}
+
+.details-content th,
+.details-content td {
+  padding: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+/* Styles for Profit and Loss */
+.profit {
+    background-color: #28a745; /* Bright green */
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  
+  .loss {
+    background-color: #dc3545; /* Bright red */
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  /* Expenses Style */
+/* Expense Grouping */
+.expense-group {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: var(--cornsilk);
+  }
+  
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--yale-blue);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .group-header .month-year {
+    font-size: 1.2rem;
+  }
+  
+  .group-header .total {
+    font-size: 1rem;
+  }
+  
+  .group-header .expander {
+    background-color: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .group-header .expander:hover {
+    background-color: var(--gold);
+    color: white;
+  }
+  
+  /* Category Group */
+  .category-group {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+  
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--mikado-yellow);
+    color: var(--rich-black);
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .category-header .category-name {
+    font-size: 1.1rem;
+  }
+  
+  .category-header .category-total {
+    font-size: 1rem;
+  }
+  
+  .category-header .expander {
+    background-color: transparent;
+    border: 1px solid var(--rich-black);
+    color: var(--rich-black);
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .category-header .expander:hover {
+    background-color: var(--yale-blue);
+    color: white;
+  }
+  
+  /* Expense Details Table */
+  .expense-details {
+    margin-top: 10px;
+    display: none;
+  }
+  
+  .expense-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .expense-details th, .expense-details td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .expense-details th {
+    background-color: var(--yale-blue);
+    color: white;
+  }
+  
+  .expense-details td {
+    background-color: var(--cornsilk);
+  }
+  
+  .expense-details .amount {
+    text-align: right;
+  }
+  
+  /* Expand/Collapse Icons */
+  .expander {
+    font-size: 1.2rem;
+    color: var(--gold);
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: color 0.3s;
+  }
+  
+  .expander:hover {
+    color: var(--yale-blue);
+  }
+  
+  .expandable-row {
+    display: none;
+  }
+  
+  .expandable-row.expanded {
+    display: table-row;
+  }
+  
+  .expandable-row .details-section {
+    display: none;
+  }
+  
+  .expandable-row.expanded .details-section {
+    display: block;
+  }
+  
+  /* Category Grouping Toggle */
+  .details-section {
+    display: none;
+    margin-top: 10px;
+    padding-left: 20px;
+    border-left: 3px solid var(--yale-blue);
+  }
+  
+  .details-section h4 {
+    font-size: 1.1rem;
+    color: var(--yale-blue);
+    margin-bottom: 10px;
+  }
+  
+  .details-section ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: var(--oxford-blue);
+  }
+  
+  /* Accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8); /* subtle overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .loader-logo {
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+  }
+  
+  /* Optional: rotate animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+/* === Dashboard CSS === */
+
+/* === Dashboard Layout === */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile-first: 1 column */
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Grid spans — reset to 1 on mobile */
+.card.span-2,
+.card.span-3 {
+  grid-column: span 1;
+}
+
+/* Responsive grid spans */
+@media (min-width: 600px) {
+  .dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card.span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 900px) {
+  .dashboard {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card.span-3 {
+    grid-column: span 3;
+  }
+}
+
+/* === Card Style === */
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px var(--davys-gray, #2f2f2f);
+  width: 100%;
+}
+
+/* === Small Summary Cards === */
+
+.small-card {
+  text-align: center;
+}
+
+.small-card h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* === Calendar === */
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.calendar-cell {
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+  font-size: 0.8rem;
+  border: 1px solid #ffee32;
+}
+
+.calendar-cell.missing {
+  background-color: #4d4d4d;
+  color: white;
+}
+
+/* === Chart Canvas === */
+
+canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+  display: block;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* === Insights List === */
+
+.card ul {
+  padding-left: 1rem;
+  list-style-type: none;
+}
+
+.card li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* === Responsive Tweaks for Small Screens === */
+
+@media (max-width: 480px) {
+  .small-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .calendar-cell {
+    font-size: 0.7rem;
+    padding: 0.3rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+}
+
+.calendar-cell .top-day-icon {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  color: #ffd100;
+}
+
+.calendar-cell.low-sale {
+  border-left: 4px solid #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.calendar-cell.high-sale {
+  border-left: 4px solid #32cd32;
+  background-color: rgba(50, 205, 50, 0.1);
+  color: #32cd32;
+  font-weight: bold;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #222;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  color: white;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+.modal-content p {
+  margin: 0.5rem 0;
+}
+
+.hidden {
+  display: none;
+}
