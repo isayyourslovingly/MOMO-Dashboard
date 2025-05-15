@@ -1,5 +1,6 @@
 const baseURL = 'https://script.google.com/macros/s/AKfycbwn1qpD0eURPkQFqyfeROmR5MWldm9I09VkKNHZz36w-nBVkqoaRt7qq0PqcD-Ws4QAzw/exec'; // Replace with your actual script ID
 
+
 let combinedSalesData = [];
 let filteredData = [];
 
@@ -12,7 +13,7 @@ function setupEventListeners() {
   document.getElementById('yearSelect').addEventListener('change', applyFilters);
   document.getElementById('monthSelect').addEventListener('change', applyFilters);
   document.getElementById('datePicker').addEventListener('change', applyFilters);
-
+  document.getElementById('tab-dashboard').addEventListener('click', () => renderTab('dashboard'));
   document.getElementById('tab-daily').addEventListener('click', () => renderTab('daily'));
   document.getElementById('tab-week').addEventListener('click', () => renderTab('week'));
   document.getElementById('tab-month').addEventListener('click', () => renderTab('month'));
@@ -21,6 +22,7 @@ function setupEventListeners() {
   document.getElementById('homeBtn').addEventListener('click', () => {
     document.getElementById('content').scrollTo({ top: 0, behavior: 'smooth' });
   });
+  document.getElementById('refreshBtn').addEventListener('click', () => hardRefresh());
   
   
 }
@@ -39,7 +41,7 @@ function fetchCombinedSalesData(params = {}) {
           filteredData = [...combinedSalesData];
           console.log(filteredData);
           populateFilterOptions();
-          renderTab('daily');
+          renderTab('dashboard');
         } else {
           console.error("Error fetching combined sales:", response);
         }
@@ -128,9 +130,12 @@ function renderTab(view) {
     case 'month':
         renderMonthlyView();
         break;
-    case 'expenses':
-        renderExpenses();
-      break;
+        case 'expenses':
+            renderExpenses();
+          break;
+          case 'dashboard':
+              renderDashboard();
+            break;
   }
 }
 
@@ -138,6 +143,241 @@ function getActiveTab() {
   const active = document.querySelector('.tab-button.active');
   return active ? active.dataset.tab : 'daily';
 }
+// === Dashboard Rendering ===
+let calendarDate = new Date(); // Default initial month
+let weeklyDonutChartInstance;
+
+function renderDashboard() {
+  if (filteredData.length === 0) return renderError("No matching sales data.");
+
+  const content = document.getElementById('content');
+  const html = `
+    <h1>Sales Dashboard</h1>
+    <div class="dashboard">
+      <div class="card small-card"><h2 id="ordersCount">0</h2><p>Total Orders (7d)</p></div>
+      <div class="card small-card"><h2 id="salesAmount">₹0</h2><p>Total Sales (7d)</p></div>
+      <div class="card small-card"><h2 id="expensesAmount">₹0</h2><p>Total Expenses (7d)</p></div>
+      <div class="card span-2">
+        <h3>📅 Sales Calendar -
+          <button id="prevMonth" aria-label="Previous Month">◀️</button>
+          <span id="calendarMonth"></span>
+          <button id="nextMonth" aria-label="Next Month">▶️</button>
+        </h3>
+        <div class="calendar-grid" id="calendar"></div>
+      </div>
+      <div class="card"><h3>📊 Sales Insights</h3><ul id="insightsList"></ul></div>
+      <div class="card span-3"><h3>📈 Sales vs Target (7 Days)</h3><canvas id="barChart" height="100"></canvas></div>
+    </div>
+    <div id="modalOverlay" class="modal-overlay hidden">
+      <div class="modal">
+        <button class="modal-close" aria-label="Close modal">×</button>
+        <div class="modal-content" id="modalContent"></div>
+      </div>
+    </div>
+  `;
+
+  content.innerHTML = html;
+
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    calendarDate.setMonth(calendarDate.getMonth() - 1);
+    renderDashboardData(filteredData, calendarDate);
+  });
+
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    calendarDate.setMonth(calendarDate.getMonth() + 1);
+    renderDashboardData(filteredData, calendarDate);
+  });
+
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay' || e.target.classList.contains('modal-close')) {
+      document.getElementById('modalOverlay').classList.add('hidden');
+    }
+  });
+
+  renderDashboardData(filteredData, calendarDate);
+}
+
+function renderDashboardData(data, date = calendarDate) {
+  calendarDate = new Date(date);
+
+  const allDailySales = data.flatMap(entry => entry.DailySaleData || []);
+  const allExpenses = data.flatMap(entry => entry.ExpensesData || []);
+  const allItems = data.flatMap(entry => entry.itemisedSale || []);
+
+  const today = new Date();
+  const currentMonth = date.getMonth();
+  const currentYear = date.getFullYear();
+  const currentMonthName = date.toLocaleString('default', { month: 'long' });
+  document.getElementById("calendarMonth").textContent = `${currentMonthName} ${currentYear}`;
+
+  const last7Days = new Set();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    last7Days.add(d.toISOString().split('T')[0]);
+  }
+
+  const last7Sales = allDailySales.filter(s => last7Days.has(s.Date));
+  const totalOrders = last7Sales.length;
+  const totalSales = last7Sales.reduce((sum, s) => sum + s["Total + Tip"], 0);
+  const totalExpenses = allExpenses.filter(e => last7Days.has(e.Date)).reduce((sum, e) => sum + e.Amount, 0);
+
+  document.getElementById("ordersCount").textContent = totalOrders;
+  document.getElementById("salesAmount").textContent = `₹${totalSales}`;
+  document.getElementById("expensesAmount").textContent = `₹${totalExpenses}`;
+
+  const cal = document.getElementById("calendar");
+  cal.innerHTML = '';
+  const dailyTotalMap = {};
+  allDailySales.forEach(d => {
+    dailyTotalMap[d.Date] = (dailyTotalMap[d.Date] || 0) + d["Total + Tip"];
+  });
+
+  const startDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const weeklySalesMap = {};
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateObj = new Date(currentYear, currentMonth, d);
+    const weekNumber = getWeekOfMonth(dateObj);
+    const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+    const sale = dailyTotalMap[dateStr] || 0;
+
+    if (!weeklySalesMap[weekNumber]) weeklySalesMap[weekNumber] = [];
+    weeklySalesMap[weekNumber].push({ date: dateStr, day: d, sale });
+  }
+
+  const starDays = new Set();
+  Object.values(weeklySalesMap).forEach(week => {
+    if (week.length > 0) {
+      const top = week.reduce((a, b) => (a.sale > b.sale ? a : b));
+      starDays.add(top.date);
+    }
+  });
+
+  for (let i = 0; i < startDay; i++) {
+    cal.innerHTML += '<div></div>';
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+    const sale = dailyTotalMap[dateStr] || 0;
+    const isTopDay = starDays.has(dateStr);
+
+    const cell = document.createElement("div");
+    cell.classList.add("calendar-cell");
+    if (sale === 0) cell.classList.add("missing");
+    if (sale < 500 && sale > 0) cell.classList.add("low-sale");
+    if (sale > 3000) cell.classList.add("high-sale");
+    if (isTopDay) cell.classList.add("star-day");
+
+    cell.innerHTML = `<strong>${d}</strong><br><small>₹${sale}</small>`;
+    cell.addEventListener('click', () => openModalForDate(dateStr, allDailySales, allItems, allExpenses));
+    cal.appendChild(cell);
+  }
+
+  function getWeekOfMonth(date) {
+    const adjustedDate = date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    return Math.ceil(adjustedDate / 7);
+  }
+
+  const chartLabels = Array.from(last7Days).sort();
+  const targetValue = 2000;
+  const actual = chartLabels.map(date =>
+    last7Sales.filter(s => s.Date === date).reduce((sum, s) => sum + s["Total + Tip"], 0)
+  );
+  const shortfall = actual.map(val => val >= targetValue ? 0 : targetValue - val);
+  const cappedActual = actual.map(val => Math.min(val, targetValue));
+
+  if (weeklyDonutChartInstance instanceof Chart) weeklyDonutChartInstance.destroy();
+  const ctx = document.getElementById('barChart').getContext('2d');
+
+  weeklyDonutChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        { label: 'Actual Sales', data: cappedActual, backgroundColor: '#ffd100' },
+        { label: 'Shortfall to Target', data: shortfall, backgroundColor: '#4d4d4d' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          suggestedMax: targetValue * 1.2
+        }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ₹${ctx.raw}`
+          }
+        }
+      }
+    }
+  });
+
+  const insightsList = document.getElementById('insightsList');
+  insightsList.innerHTML = '';
+  const topSold = allItems.length ? [...allItems].sort((a, b) => b["Qty."] - a["Qty."])[0] : null;
+  const leastSold = allItems.length ? [...allItems].sort((a, b) => a["Qty."] - b["Qty."])[0] : null;
+  const mostProfit = allItems.length ? [...allItems].sort((a, b) => b["Total"] - a["Total"])[0] : null;
+
+  const orderCounts = {};
+  allDailySales.forEach(o => {
+    orderCounts[o.Date] = (orderCounts[o.Date] || 0) + 1;
+  });
+
+  const datesSorted = Object.entries(orderCounts).sort((a, b) => b[1] - a[1]);
+  const [busiestDate, busiestCount] = datesSorted[0] || [];
+  const [quietestDate, quietestCount] = datesSorted[datesSorted.length - 1] || [];
+
+  const insights = [
+    topSold && `🏆 <b>Top Sold:</b> ${topSold.Item} (${topSold["Qty."]} sold)`,
+    leastSold && `💤 <b>Least Sold:</b> ${leastSold.Item} (${leastSold["Qty."]} sold)`,
+    mostProfit && `💰 <b>Most Profit:</b> ${mostProfit.Item} (₹${mostProfit.Total})`,
+    busiestDate && `📅 <b>Busiest Day:</b> ${busiestDate} (${busiestCount} orders)`,
+    quietestDate && `🕊️ <b>Quietest Day:</b> ${quietestDate} (${quietestCount} orders)`
+  ].filter(Boolean);
+
+  insights.forEach(txt => {
+    const li = document.createElement('li');
+    li.innerHTML = txt;
+    insightsList.appendChild(li);
+  });
+}
+
+function openModalForDate(dateStr, sales, items, expenses) {
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalContent = document.getElementById('modalContent');
+
+  const formattedDate = new Date(dateStr).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+
+  const dailySales = sales.filter(s => s.Date === dateStr);
+  const dailyExpenses = expenses.filter(e => e.Date === dateStr);
+  const itemCount = items.filter(i => i.Date === dateStr).reduce((sum, i) => sum + i["Qty."], 0);
+
+  const totalSales = dailySales.reduce((sum, s) => sum + s["Total + Tip"], 0);
+  const totalExpenses = dailyExpenses.reduce((sum, e) => sum + e.Amount, 0);
+
+  modalContent.innerHTML = `
+    <h2>${formattedDate}</h2>
+    <p><b>Total Sales:</b> ₹${totalSales}</p>
+    <p><b>Total Items Sold:</b> ${itemCount}</p>
+    <p><b>Total Expenses:</b> ₹${totalExpenses}</p>
+  `;
+
+  modalOverlay.classList.remove('hidden');
+}
+
 
 // === Expenses Rendering ===
 function renderExpenses() {
@@ -745,3 +985,8 @@ function toggleDetails(id) {
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
   }
   
+// === Refresh ===
+
+  function hardRefresh() {
+    location.reload(true); // Force a hard reload (deprecated but still works in many browsers)
+}
