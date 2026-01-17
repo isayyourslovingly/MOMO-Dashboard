@@ -1,4 +1,4 @@
-const baseURL = 'https://script.google.com/macros/s/AKfycbwn1qpD0eURPkQFqyfeROmR5MWldm9I09VkKNHZz36w-nBVkqoaRt7qq0PqcD-Ws4QAzw/exec'; // Replace with your actual script ID
+const baseURL = 'https://script.google.com/macros/s/AKfycbzDy9ZYVKggmLIFrvArQqG-MnL3e9lLoRZdTamnn--c1F5VD5tMJu-xRe2leYAcQ64ZMg/exec'; // Replace with your actual script ID
 
 
 let combinedSalesData = [];
@@ -989,4 +989,5 @@ function toggleDetails(id) {
 
   function hardRefresh() {
     location.reload(true); // Force a hard reload (deprecated but still works in many browsers)
+
 }
